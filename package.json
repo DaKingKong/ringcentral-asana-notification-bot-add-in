@@ -1,0 +1,48 @@
+{
+    "name": "1",
+    "version": "0.0.1",
+    "description": "RingCentral Bot Add-In",
+    "keywords": [
+        "RingCentral",
+        "Add-In",
+        "Bot"
+    ],
+    "main": "index.js",
+    "scripts": {
+        "start": "node src/server.js",
+        "dev": "node -r dotenv/config src/server.js",
+        "tunnel": "lite-http-tunnel start 6066 -p asana",
+        "test": "set NODE_ENV=test&&jest --forceExit -i",
+        "serverless-build": "node ./scripts/serverless-build",
+        "serverless-deploy": "node ./scripts/serverless-deploy"
+    },
+    "dependencies": {
+        "adaptive-expressions": "^4.14.1",
+        "adaptivecards-templating": "^2.2.0",
+        "asana": "^0.18.6",
+        "axios": "^0.26.1",
+        "client-oauth2": "^4.3.3",
+        "express": "^4.17.1",
+        "glip-integration-js": "^0.2.1",
+        "parse-multipart-data": "^1.2.1",
+        "pg": "^8.7.3",
+        "ringcentral-chatbot-core": "^1.0.11",
+        "sequelize": "^5.22.3",
+        "serverless-http": "^3.0.1",
+        "shortid": "^2.2.16"
+    },
+    "devDependencies": {
+        "@octokit/rest": "^18.12.0",
+        "commander": "^9.2.0",
+        "dotenv": "^10.0.0",
+        "inquirer": "^8.2.2",
+        "jest": "^27.5.1",
+        "nock": "^13.2.4",
+        "serverless": "^2.72.3",
+        "serverless-deployment-bucket": "^1.5.2",
+        "shelljs": "^0.8.5",
+        "simple-git": "^3.7.0",
+        "sqlite3": "^5.0.2",
+        "supertest": "^6.2.2"
+    }
+}
