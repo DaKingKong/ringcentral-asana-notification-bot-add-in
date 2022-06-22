@@ -6,14 +6,21 @@ const rcAPI = require('../lib/rcAPI');
 const { AsanaUser } = require('../models/asanaUserModel');
 const { Subscription } = require('../models/subscriptionModel');
 
-const HELPER_TEXT = 'Hi there';
+const HELPER_TEXT =
+    'Hello human, this is **Asana Bot**.\n\n' +
+    'I can help you with subscribing to Asana events: **New Assign Task**, **New Comments** and **Task Due Reminder**. Here are my commands:\n' +
+    '1. `login`: **Login** with your Asana Account\n' +
+    '2. `logout`: **Logout** your Asana Account and **clear all** subscriptions created by it\n' +
+    '3. `config`: **Show** current config settings\n' +
+    '4. `help`: **Show** this help message'
+
 
 const botHandler = async event => {
     try {
         switch (event.type) {
             case 'BotJoinGroup':
                 const { group: joinedGroup, bot: joinedBot } = event;
-                await joinedBot.sendMessage(joinedGroup.id, { text: 'welcome' });
+                await joinedBot.sendMessage(joinedGroup.id, { text: HELPER_TEXT });
                 break;
             case 'Message4Bot':
                 const { text, group, bot: botForMessage, userId } = event;
