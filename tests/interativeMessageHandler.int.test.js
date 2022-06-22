@@ -1,6 +1,7 @@
 const { default: Bot } = require('ringcentral-chatbot-core/dist/models/Bot');
 const { AsanaUser } = require('../src/models/asanaUserModel');
 const { Subscription } = require('../src/models/subscriptionModel');
+const authorizationHandler = require('../src/handlers/authorizationHandler');
 const request = require('supertest');
 const { server } = require('../src/server.js');
 const rcAPI = require('../src/lib/rcAPI');
@@ -184,11 +185,57 @@ describe('interactiveMessageHandler', () => {
 
             // Assert
             expect(res.status).toEqual(200);
-            expect(requestBody.text).toBe("![:Person](unknownRcUserId) Asana account not found. Please message me with \`login\` to login.");
+            expect(requestBody.text).toBe("Asana account not found. Please use command \`login\` to login.");
         });
     });
 
     describe('submissions', () => {
+        describe('Logout', () => {
+            test('logout - return unAuth card', async () => {
+                // Arrange
+                let requestBody = null;
+                authorizationHandler.unauthorize = jest.fn().mockReturnValue({})
+                const postData = {
+                    data: {
+                        botId,
+                        actionType: 'logout'
+                    },
+                    user: {
+                        extId: rcUserId
+                    },
+                    conversation: {
+                        id: groupId
+                    },
+                    card: {
+                        id: cardId
+                    },
+                    uuid: generate()
+                }
+                postScope.once('request', ({ headers: requestHeaders }, interceptor, reqBody) => {
+                    requestBody = JSON.parse(reqBody);
+                });
+
+                // Act
+                const res = await request(server).post('/interactive-messages').send(postData)
+
+                // Assert
+                expect(res.status).toEqual(200);
+                expect(requestBody.text).toBe('successfully logged out.');
+                const loggedOutAsanaUser = await AsanaUser.findByPk(asanaUserId);
+                expect(loggedOutAsanaUser).toBe(null);
+
+                // Clean up
+                await AsanaUser.create({
+                    id: asanaUserId,
+                    rcUserId,
+                    email: asanaUserEmail,
+                    name: asanaUserName,
+                    accessToken: asanaAccessToken,
+                    userTaskListGid: asanaUserTaskListGid
+                });
+            });
+        });
+
         describe('Edit Config Dialog', () => {
             test('return the card in dialog', async () => {
                 // Arrange

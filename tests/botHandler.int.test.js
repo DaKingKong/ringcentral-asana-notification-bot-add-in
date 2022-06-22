@@ -220,30 +220,30 @@ describe('botHandler', () => {
             expect(requestBody.text).toBe("Asana account not found. Please type `login` to authorize your account.");
         });
 
-        // test('has Asana Account - logout card', async () => {
-        //     // Arrange
-        //     let requestBody = null;
-        //     const bot = await Bot.findByPk(botId);
-        //     const event = {
-        //         type: "Message4Bot",
-        //         text: "logout",
-        //         userId: rcUserId,
-        //         bot,
-        //         group: {
-        //             id: "groupId"
-        //         }
-        //     }
-        //     cardScope.once('request', ({ headers: requestHeaders }, interceptor, reqBody) => {
-        //         requestBody = JSON.parse(reqBody);
-        //     });
+        test('has Asana Account - logout card', async () => {
+            // Arrange
+            let requestBody = null;
+            const bot = await Bot.findByPk(botId);
+            const event = {
+                type: "Message4Bot",
+                text: "logout",
+                userId: rcUserId,
+                bot,
+                group: {
+                    id: "groupId"
+                }
+            }
+            cardScope.once('request', ({ headers: requestHeaders }, interceptor, reqBody) => {
+                requestBody = JSON.parse(reqBody);
+            });
 
-        //     // Act
-        //     await botHandler(event);
+            // Act
+            await botHandler(event);
 
-        //     // Assert
-        //     expect(requestBody.type).toBe('AdaptiveCard');
-        //     expect(requestBody.body[0].text).toBe('Google Drive Logout');
-        // });
+            // Assert
+            expect(requestBody.type).toBe('AdaptiveCard');
+            expect(requestBody.body[0].text).toBe('Asana Logout');
+        });
     });
 
     describe('@bot config', () => {

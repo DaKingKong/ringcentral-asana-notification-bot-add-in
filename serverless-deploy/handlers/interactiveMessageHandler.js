@@ -64,7 +64,7 @@ async function interactiveMessages(req, res) {
         // const createGroupResponse = await rcAPI.createConversation([rcUserId], bot.token.access_token);
 
         if (!asanaUser) {
-            await bot.sendMessage(groupId, { text: `![:Person](${rcUserId}) Asana account not found. Please message me with \`login\` to login.` });
+            await bot.sendMessage(groupId, { text: `Asana account not found. Please use command \`login\` to login.` });
             res.status(200);
             res.json('OK')
             return;

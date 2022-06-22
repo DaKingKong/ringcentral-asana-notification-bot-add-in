@@ -1,5 +1,4 @@
 const { getOAuthApp } = require('../lib/oauth');
-const authorizationHandler = require('./authorizationHandler');
 const cardBuilder = require('../lib/cardBuilder');
 const rcAPI = require('../lib/rcAPI');
 
@@ -7,8 +6,8 @@ const { AsanaUser } = require('../models/asanaUserModel');
 const { Subscription } = require('../models/subscriptionModel');
 
 const HELPER_TEXT =
-    'Hello human, this is **Asana Bot**.\n\n' +
-    'I can help you with subscribing to Asana events: **New Assign Task**, **New Comments** and **Task Due Reminder**. Here are my commands:\n' +
+    'Hi there, this is **Asana Bot**.\n\n' +
+    'Log in with your Asana Account to receive notifications on **New Assign Task**, **New Comments** and **Task Due Reminder**. Here are my commands:\n' +
     '1. `login`: **Login** with your Asana Account\n' +
     '2. `logout`: **Logout** your Asana Account and **clear all** subscriptions created by it\n' +
     '3. `config`: **Show** current config settings\n' +
@@ -53,9 +52,8 @@ const botHandler = async event => {
                         break;
                     case 'logout':
                         if (existingAsanaUser) {
-                            await authorizationHandler.unauthorize(existingAsanaUser);
-                            await botForMessage.sendMessage(existingAsanaUser.rcDMGroupId, { text: 'successfully logged out.' });
-                            await existingAsanaUser.destroy();
+                            const unAuthCard = cardBuilder.unAuthCard(botForMessage.id, 'This will unsubscribe to all Asana events.');
+                            await botForMessage.sendAdaptiveCard(createGroupResponse.id, unAuthCard);
                         } else {
                             await botForMessage.sendMessage(group.id, { text: 'Asana account not found. Please type `login` to authorize your account.' });
                         }

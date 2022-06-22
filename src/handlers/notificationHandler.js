@@ -63,7 +63,7 @@ async function sendNotification(query, body) {
                 for (const customField of task.custom_fields) {
                     customFields.push({
                         title: customField.name,
-                        value: customField.display_value
+                        value: customField.display_value ?? 'Null'
                     });
                 }
             }

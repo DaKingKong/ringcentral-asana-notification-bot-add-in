@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const Bot = require('ringcentral-chatbot-core/dist/models/Bot').default;
 const { AsanaUser } = require('../models/asanaUserModel')
+const authorizationHandler = require('./authorizationHandler');
 const subscriptionHandler = require('./subscriptionHandler');
 const { checkAndRefreshAccessToken } = require('../lib/oauth');
 const asana = require('asana');
@@ -61,7 +62,7 @@ async function interactiveMessages(req, res) {
         });
 
         if (!asanaUser) {
-            await bot.sendMessage(groupId, { text: `![:Person](${rcUserId}) Asana account not found. Please message me with \`login\` to login.` });
+            await bot.sendMessage(groupId, { text: `Asana account not found. Please use command \`login\` to login.` });
             res.status(200);
             res.json('OK')
             return;
@@ -81,6 +82,11 @@ async function interactiveMessages(req, res) {
         };
 
         switch (body.data.actionType) {
+            case 'logout':
+                await authorizationHandler.unauthorize(asanaUser);
+                await bot.sendMessage(groupId, { text: 'successfully logged out.' });
+                await asanaUser.destroy();
+                break;
             case 'configEdit':
                 const workspacesResponse = await client.workspaces.findAll();
                 const editConfigCard = cardBuilder.editConfigCard(bot.id, workspacesResponse.data, subscription);

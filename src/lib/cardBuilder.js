@@ -1,6 +1,7 @@
 const { Template } = require('adaptivecards-templating');
 
 const authCardTemplateJson = require('../adaptiveCardPayloads/authCard.json');
+const unAuthCardTemplateJson = require('../adaptiveCardPayloads/unAuthCard.json');
 const configCardTemplateJson = require('../adaptiveCardPayloads/configCard.json');
 const editConfigCardTemplateJson = require('../adaptiveCardPayloads/editConfigCard.json');
 const newTaskAssignedCardTemplateJson = require('../adaptiveCardPayloads/newTaskAssignedCard.json');
@@ -12,6 +13,19 @@ function authCard(authLink, additionalInfoText) {
     const template = new Template(authCardTemplateJson);
     const cardData = {
         link: authLink,
+        additionalInfoText,
+        showAdditionalInfo: additionalInfoText != null
+    }
+    const card = template.expand({
+        $root: cardData
+    });
+    return card;
+}
+
+function unAuthCard(botId, additionalInfoText) {
+    const template = new Template(unAuthCardTemplateJson);
+    const cardData = {
+        botId,
         additionalInfoText,
         showAdditionalInfo: additionalInfoText != null
     }
@@ -142,6 +156,7 @@ function newCommentCard(botId, taskName, taskLink, comment, userName, userEmail,
 
 
 exports.authCard = authCard;
+exports.unAuthCard = unAuthCard;
 exports.configCard = configCard;
 exports.editConfigCard = editConfigCard;
 exports.newTaskAssignedCard = newTaskAssignedCard;
