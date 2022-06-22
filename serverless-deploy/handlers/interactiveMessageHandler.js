@@ -60,6 +60,9 @@ async function interactiveMessages(req, res) {
             }
         });
 
+        // Create/Find DM conversation to the RC user
+        // const createGroupResponse = await rcAPI.createConversation([rcUserId], bot.token.access_token);
+
         if (!asanaUser) {
             await bot.sendMessage(groupId, { text: `![:Person](${rcUserId}) Asana account not found. Please message me with \`login\` to login.` });
             res.status(200);

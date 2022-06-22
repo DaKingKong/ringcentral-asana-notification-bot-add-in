@@ -10,7 +10,7 @@ const MAX_TASK_DESC_LENGTH = 200;
 async function notification(req, res) {
     try {
         const { query, body } = req;
-        await sendNotification(query, body);
+        sendNotification(query, body);
     }
     catch (e) {
         console.error(e);
@@ -32,10 +32,6 @@ async function sendNotification(query, body) {
     const subscription = await Subscription.findByPk(subscriptionId);
     console.log(`Receiving notification: ${JSON.stringify(body)}`)
 
-    if (!subscription) {
-        return;
-    }
-
     const incomingEvents = body.events;
     if (incomingEvents) {
         const asanaUserId = subscription.asanaUserId;
@@ -45,10 +41,11 @@ async function sendNotification(query, body) {
         await checkAndRefreshAccessToken(asanaUser);
         const client = asana.Client.create({ "defaultHeaders": { "Asana-Enable": "new_user_task_lists" } }).useAccessToken(asanaUser.accessToken);
         for (const event of incomingEvents) {
-            // changes from user self doesn't generate a notification
-            if (event.user && event.user.gid == asanaUser.id) {
-                continue;
-            }
+            // TODO: changes from myself doesn't generate a notification
+            // if(event.user && event.user.gid == asanaUser.id)
+            // {
+            //     continue;
+            // }
             const byUser = await client.users.findById(event.user.gid);
             // task -> resource.gid == taskId; comment -> parent.gid == taskId
             const task = await client.tasks.findById(event.resource.resource_type == 'task' ? event.resource.gid : event.parent.gid);
@@ -80,13 +77,11 @@ async function sendNotification(query, body) {
                         await bot.sendAdaptiveCard(subscription.groupId, newTaskAssignedCard);
                     }
                 }
-                // COMMENTED: unconfirmed use case
-
                 // case.2: My Task due change
-                // else if (event.change && event.change.field == 'due_on') {
-                //     const taskDueDateChangeCard = cardBuilder.taskDueDateChangeCard(taskName, taskDescription, projectNames, taskDueDate, username, userEmail, taskLink);
-                //     await bot.sendAdaptiveCard(subscription.groupId, taskDueDateChangeCard);
-                // }
+                else if (event.change && event.change.field == 'due_on') {
+                    const taskDueDateChangeCard = cardBuilder.taskDueDateChangeCard(taskName, taskDescription, projectNames, taskDueDate, username, userEmail, taskLink);
+                    await bot.sendAdaptiveCard(subscription.groupId, taskDueDateChangeCard);
+                }
             }
             // case.3: New Comment under My Task (except my own comment)
             else if (event.resource.resource_type == 'story' && event.resource.resource_subtype == 'comment_added') {

@@ -1,42 +1,35 @@
 {
     "type": "AdaptiveCard",
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-    "version": "1.3",
+    "version": "1.5",
     "body": [
         {
             "type": "TextBlock",
-            "text": "Config",
+            "text": "Asana Login",
             "wrap": true,
             "size": "Large",
             "weight": "Bolder"
         },
         {
-            "type": "FactSet",
-            "facts": [
-                {
-                    "title": "Workspace",
-                    "value": "${workspaceName}"
-                },
-                {
-                    "title": "Task Due Reminder",
-                    "value": "${taskDueReminderInterval}"
-                },
-                {
-                    "title": "Timezone Offset (hours)",
-                    "value": "${timezoneOffset}"
-                }
-            ]
+            "type": "TextBlock",
+            "text": "Please click below button to login",
+            "wrap": true
+        },
+        {
+            "type": "TextBlock",
+            "text": "${additionalInfoText}",
+            "wrap": true,
+            "size": "Small",
+            "color": "Warning",
+            "$when": "${showAdditionalInfo}"
         },
         {
             "type": "ActionSet",
             "actions": [
                 {
-                    "type": "Action.Submit",
-                    "title": "Edit",
-                    "data": {
-                        "actionType": "configEdit",
-                        "botId": "${botId}"
-                    }
+                    "type": "Action.OpenUrl",
+                    "title": "Login",
+                    "url": "${link}"
                 }
             ]
         },

@@ -52,18 +52,22 @@ async function oauthCallback(req, res) {
                 tokenExpiredAt: expires,
                 rcDMGroupId: createGroupResponse.id
             });
+        }
+        // If user exists but logged out, we want to fill in token info
+        else if (!asanaUser.accessToken) {
+            asanaUser.accessToken = accessToken;
+            asanaUser.refreshToken = refreshToken;
+            asanaUser.tokenExpiredAt = expires;
+            await asanaUser.save();
+        }
 
-            const workspacesResponse = await asanaClient.workspaces.findAll();
-            const subscription = await subscriptionHandler.subscribe(asanaUser, workspacesResponse.data[0], asanaUser.rcDMGroupId, 'off', '0');
-    
-            await bot.sendMessage(asanaUser.rcDMGroupId, { text: `Successfully logged in.` });
-    
-            const configCard = cardBuilder.configCard(bot.id, subscription);
-            await bot.sendAdaptiveCard(asanaUser.rcDMGroupId, configCard);
-        }
-        else {
-            await bot.sendMessage(asanaUser.rcDMGroupId, { text: `Asana account ${userInfo.email} already exists.` });
-        }
+        const workspacesResponse = await asanaClient.workspaces.findAll();
+        const subscription = await subscriptionHandler.subscribe(asanaUser, workspacesResponse.data[0], asanaUser.rcDMGroupId, 'off', '0');
+
+        await bot.sendMessage(asanaUser.rcDMGroupId, { text: `Successfully logged in.` });
+
+        const configCard = cardBuilder.configCard(bot.id, subscription);
+        await bot.sendAdaptiveCard(asanaUser.rcDMGroupId, configCard);
     } catch (e) {
         console.error(e);
         res.status(500);

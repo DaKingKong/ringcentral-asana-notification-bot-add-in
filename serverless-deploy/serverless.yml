@@ -1,4 +1,8 @@
-service: google-drive-notification-add-in-bot
+service: asana-notification-add-in-bot
+plugins:
+  - serverless-plugin-log-retention
+custom:
+  logRetentionInDays: 180 # used to set a global value for all functions
 
 provider:
   stage: prod
@@ -12,9 +16,9 @@ provider:
     Department: dev
     Owner: dakong
     Stage: production
-    Environment: google-drive-notification-add-in-bot
+    Environment: asana-notification-add-in-bot
     Team: int-xmn
-    Name: google-drive-notification-add-in-bot
+    Name: asana-notification-add-in-bot
   vpc:
     securityGroupIds:
       - Ref: LambdaSecurityGroup
@@ -31,15 +35,13 @@ package:
     - 'node_modules/**'
     
 functions:
-  refreshGoogleSubCron:
-    handler: refreshGoogleSubCron.app
-    events:
-      - schedule: rate(12 hours)
-  triggerDigestCron:
-    handler: triggerDigestCron.app
-    # triggered every hour, HH:01:00, 1 minute is to count in server processing time
+  taskDueReminder:
+    handler: taskDueReminder.app
+    # triggered every hour, HH:01:00
     events:
       - schedule: cron(1 * * * ? *)
+  dbAccessor:
+    handler: dbAccessor.app
   app:
     handler: lambda.app
     # role: arn:aws:iam::111111:role/xxxx-prod-us-east-1-lambdaRole

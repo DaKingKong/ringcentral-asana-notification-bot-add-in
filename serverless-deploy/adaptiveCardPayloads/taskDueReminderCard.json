@@ -4,7 +4,7 @@
         {
             "type": "TextBlock",
             "size": "Large",
-            "text": "New Comment",
+            "text": "Task Due Reminder",
             "weight": "Bolder"
         },
         {
@@ -15,7 +15,7 @@
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "A new comment under your task",
+                            "text": "You have a task due soon",
                             "weight": "Bolder",
                             "wrap": true
                         },
@@ -23,18 +23,26 @@
                             "type": "FactSet",
                             "facts": [
                                 {
-                                    "title": "Task Name",
+                                    "title": "Name",
                                     "value": "[${taskName}](${taskLink})"
                                 },
                                 {
-                                    "title": "Comment",
-                                    "value": "${comment}"
+                                    "title": "Description",
+                                    "value": "${taskDescription}"
                                 },
                                 {
-                                    "title": "Commented By",
-                                    "value": "${username} (${userEmail})"
+                                    "title": "Project(s)",
+                                    "value": "${projectNames}"
+                                },
+                                {
+                                    "title": "Due Date",
+                                    "value": "${taskDueDate}"
                                 }
                             ]
+                        },
+                        {
+                            "type": "FactSet",
+                            "facts": "${customFields}"
                         }
                     ],
                     "width": "stretch"
@@ -49,49 +57,6 @@
                     "type": "Action.OpenUrl",
                     "title": "Open Task",
                     "url": "${taskLink}"
-                },
-                {
-                    "type": "Action.ShowCard",
-                    "title": "Reply Comment",
-                    "card": {
-                        "type": "AdaptiveCard",
-                        "body": [
-                            {
-                                "type": "Input.Text",
-                                "placeholder": "reply here...",
-                                "label": "Reply:",
-                                "id": "reply",
-                                "isRequired": true
-                            },
-                            {
-                                "type": "Input.Toggle",
-                                "value": "false",
-                                "title": "mention all collaborators",
-                                "id": "mentionCollaborators"
-                            },
-                            {
-                                "type": "Input.Toggle",
-                                "value": "false",
-                                "title": "mention commenter",
-                                "id": "mentionCommenter"
-                            },
-                            {
-                                "type": "ActionSet",
-                                "actions": [
-                                    {
-                                        "type": "Action.Submit",
-                                        "title": "Submit",
-                                        "data": {
-                                            "actionType": "replyComment",
-                                            "taskId": "${taskId}",
-                                            "botId": "${botId}",
-                                            "commenterId": "${commenterId}"
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
-                    }
                 }
             ]
         },

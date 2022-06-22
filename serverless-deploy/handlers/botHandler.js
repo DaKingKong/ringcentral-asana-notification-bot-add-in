@@ -6,8 +6,6 @@ const rcAPI = require('../lib/rcAPI');
 const { AsanaUser } = require('../models/asanaUserModel');
 const { Subscription } = require('../models/subscriptionModel');
 
-const HELPER_TEXT = 'Hi there';
-
 const botHandler = async event => {
     try {
         switch (event.type) {
@@ -33,7 +31,7 @@ const botHandler = async event => {
                         break;
                     case 'login':
                         if (existingAsanaUser) {
-                            await botForMessage.sendMessage(group.id, { text: 'You have already logged in.' });
+                            await botForMessage.sendMessage(group.id, { text: 'Asana account already exists.' });
                         }
                         else {
                             const oauthApp = getOAuthApp();
@@ -50,7 +48,7 @@ const botHandler = async event => {
                             await botForMessage.sendMessage(existingAsanaUser.rcDMGroupId, { text: 'successfully logged out.' });
                             await existingAsanaUser.destroy();
                         } else {
-                            await botForMessage.sendMessage(group.id, { text: 'Asana account not found. Please type `login` to authorize your account.' });
+                            await botForMessage.sendMessage(group.id, { text: 'Cannot find Asana account.' });
                         }
                         break;
                     case 'config':
@@ -63,12 +61,8 @@ const botHandler = async event => {
                             const configCard = cardBuilder.configCard(botForMessage.id, existingSubscription);
                             await botForMessage.sendAdaptiveCard(createGroupResponse.id, configCard);
                         } else {
-                            await botForMessage.sendMessage(group.id, { text: 'Asana account not found. Please type `login` to authorize your account.' });
+                            await botForMessage.sendMessage(group.id, { text: 'Cannot find Asana account.' });
                         }
-                        break;
-                    case 'help':
-                    default:
-                        await botForMessage.sendMessage(group.id, { text: HELPER_TEXT });
                         break;
                 }
         }

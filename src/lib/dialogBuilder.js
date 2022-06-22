@@ -1,12 +1,12 @@
-function getIframeDialog({ title, size, iconURL, iframeURL }) {
-    const dialog = {
-        ...(size !== null && { size }),
-        ...(iconURL !== null && { iconURL }),
-        ...title, iframeURL
-    };
+// function getIframeDialog({ title, size, iconURL, iframeURL }) {
+//     const dialog = {
+//         ...(size !== null && { size }),
+//         ...(iconURL !== null && { iconURL }),
+//         ...title, iframeURL
+//     };
 
-    return dialog;
-}
+//     return dialog;
+// }
 
 function getCardDialog({ title, size, iconURL, card }){
     const dialog = {
@@ -18,5 +18,5 @@ function getCardDialog({ title, size, iconURL, card }){
     return dialog;
 }
 
-exports.getIframeDialog = getIframeDialog;
+// exports.getIframeDialog = getIframeDialog;
 exports.getCardDialog = getCardDialog;
