@@ -103,3 +103,5 @@ dist
 .tern-port
 db.sqlite
 
+serverless.yml
+env.yml
