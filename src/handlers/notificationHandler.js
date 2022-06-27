@@ -52,6 +52,11 @@ async function sendNotification(query, body) {
             const byUser = await client.users.findById(event.user.gid);
             // task -> resource.gid == taskId; comment -> parent.gid == taskId
             const task = await client.tasks.findById(event.resource.resource_type == 'task' ? event.resource.gid : event.parent.gid);
+            console.log(task.followers);
+            if(!task.followers.map(f=>f.gid).includes(asanaUser.id))
+            {
+                continue;
+            }
             console.log(`Target Task:\n${JSON.stringify(task, null, 2)}`);
             const taskName = task.name;
             const taskDescription = task.notes.length > MAX_TASK_DESC_LENGTH ?
@@ -61,10 +66,12 @@ async function sendNotification(query, body) {
             let customFields = [];
             if (task.custom_fields) {
                 for (const customField of task.custom_fields) {
-                    customFields.push({
-                        title: customField.name,
-                        value: customField.display_value ?? 'Null'
-                    });
+                    if (customField.display_value) {
+                        customFields.push({
+                            title: customField.name,
+                            value: customField.display_value
+                        });
+                    }
                 }
             }
             const taskDueDate = task.due_on;
@@ -81,7 +88,6 @@ async function sendNotification(query, body) {
                     }
                 }
                 // COMMENTED: unconfirmed use case
-
                 // case.2: My Task due change
                 // else if (event.change && event.change.field == 'due_on') {
                 //     const taskDueDateChangeCard = cardBuilder.taskDueDateChangeCard(taskName, taskDescription, projectNames, taskDueDate, username, userEmail, taskLink);
@@ -93,17 +99,18 @@ async function sendNotification(query, body) {
                 // get comment info   
                 const commentStory = await client.stories.findById(event.resource.gid);
 
-                // COMMENTED: trying to replace mention user string back to it, from user task list link
-
-                // let commentWithMentions = commentStory.text;
-                // const mentionRegex = new RegExp('https://app.asana.com/0/(.{1,20})/list', 'g');
-                // const userTaskListIds = commentStory.text.matchAll(mentionRegex);
-                // for (const userTaskListId of userTaskListIds) {
-                //     console.log(userTaskListId[1])
-                //     const userTaskList = await client.userTaskLists.findById(userTaskListId[1]);
-                //     commentWithMentions = commentWithMentions.replace(`https://app.asana.com/0/${userTaskListId[1]}/list`, `@${userTaskList.owner.name}`);
-                // }
-                const newCommentCard = cardBuilder.newCommentCard(bot.id, taskName, taskLink, commentStory.text, username, userEmail, task.gid, event.user.gid);
+                // trying to replace mention user string back to it, from user task list link, but not always working
+                let commentWithMentions = commentStory.text;
+                const mentionRegex = new RegExp('https://app.asana.com/0/(.{1,20})/list', 'g');
+                const userTaskListIds = commentStory.text.matchAll(mentionRegex);
+                for (const userTaskListId of userTaskListIds) {
+                    console.log(userTaskListId[1])
+                    const userTaskList = await client.userTaskLists.findById(userTaskListId[1]);
+                    if (userTaskList) {
+                        commentWithMentions = commentWithMentions.replace(`https://app.asana.com/0/${userTaskListId[1]}/list`, `@${userTaskList.owner.name}`);
+                    }
+                }
+                const newCommentCard = cardBuilder.newCommentCard(bot.id, taskName, taskLink, commentWithMentions, username, userEmail, task.gid, event.user.gid);
                 await bot.sendAdaptiveCard(subscription.groupId, newCommentCard);
             }
         }

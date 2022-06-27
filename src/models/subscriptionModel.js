@@ -13,19 +13,7 @@ exports.Subscription = sequelize.define('subscriptions', {
   asanaUserId: {
     type: Sequelize.STRING
   },
-  workspaceName: {
-    type: Sequelize.STRING
-  },
-  workspaceId: {
-    type: Sequelize.STRING
-  },
   groupId: {
-    type: Sequelize.STRING
-  },
-  taskDueReminderInterval: {
-    type: Sequelize.STRING
-  },
-  timezoneOffset: {
     type: Sequelize.STRING
   }
 });

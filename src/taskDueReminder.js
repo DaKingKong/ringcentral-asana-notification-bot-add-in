@@ -21,6 +21,7 @@ async function triggerDueTaskReminder() {
         }
     });
     for (const sub of subscriptions) {
+        console.log(`checking subscription: ${sub.id}`);
         const userLocalHour = utcDate.get('hour') + Number(sub.timezoneOffset);
         // trigger time is 8am in the morning, for user's timezone
         if (userLocalHour == 8 || userLocalHour == 32) {
@@ -28,12 +29,11 @@ async function triggerDueTaskReminder() {
             await checkAndRefreshAccessToken(asanaUser);
             const asanaClient = asana.Client.create({ "defaultHeaders": { "Asana-Enable": "new_user_task_lists" } }).useAccessToken(asanaUser.accessToken);
             const tasksResponse = await asanaClient.userTaskLists.tasks(asanaUser.userTaskListGid);
+            const tasks = [];
             for (const taskData of tasksResponse.data) {
                 const task = await asanaClient.tasks.findById(taskData.gid);
                 if (task.due_on) {
-                    const utcDateToTrigger = moment.utc(task.due_on)
-                        .add(-Number(sub.taskDueReminderInterval), 'days')
-                        .add(userLocalHour - Number(sub.timezoneOffset), 'hours');
+                    const utcDateToTrigger = reduceBusinessDays(moment.utc(task.due_on), Number(sub.taskDueReminderInterval)).add(userLocalHour - Number(sub.timezoneOffset), 'hours');
                     if (utcDate.diff(utcDateToTrigger, 'hours') == 0) {
                         const taskName = task.name;
                         const taskDescription = task.notes.length > MAX_TASK_DESC_LENGTH ?
@@ -51,17 +51,42 @@ async function triggerDueTaskReminder() {
                         }
                         const taskDueDate = task.due_on;
                         const taskLink = task.permalink_url;
-                        const taskDueReminderCard = cardBuilder.taskDueReminderCard(taskName, taskDescription, projectNames, taskDueDate, taskLink, customFields);
-                        const bot = await Bot.findByPk(asanaUser.botId);
-                        await bot.sendAdaptiveCard(asanaUser.rcDMGroupId, taskDueReminderCard);
+                        tasks.push({
+                            taskName,
+                            taskDescription,
+                            projectNames,
+                            taskDueDate,
+                            customFields,
+                            taskLink
+                        })
                     }
                 }
             }
+            const taskDueReminderCard = cardBuilder.taskDueReminderCard(sub.taskDueReminderInterval, tasks);
+            const bot = await Bot.findByPk(asanaUser.botId);
+            await bot.sendAdaptiveCard(asanaUser.rcDMGroupId, taskDueReminderCard);
         }
     }
 }
 
-// For testing
+function reduceBusinessDays(originalDate, numDaysToReduce) {
+    const Sunday = 0;
+    const Saturday = 6;
+    let daysRemaining = numDaysToReduce;
+
+    const newDate = originalDate.clone();
+
+    while (daysRemaining > 0) {
+        newDate.add(-1, 'days');
+        if (newDate.day() !== Sunday && newDate.day() !== Saturday) {
+            daysRemaining--;
+        }
+    }
+
+    return newDate;
+}
+
+// For local manual testing
 // triggerDueTaskReminder();
 
 exports.app = triggerDueTaskReminder;

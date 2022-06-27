@@ -168,13 +168,12 @@ describe('oauthCallback', () => {
                 });
             const asanaCreateWebhookScope = nock('https://app.asana.com')
                 .post(`/api/1.0/webhooks`)
-                .once()
+                .twice()
                 .reply(200, {
                     data: {
                         gid: asanaWebhookId
                     }
                 });
-
             const asanaUseTaskListScope = nock('https://app.asana.com')
                 .get(`/api/1.0/users/me/user_task_list?workspace=${newWorkspaceId}`)
                 .once()
@@ -182,6 +181,15 @@ describe('oauthCallback', () => {
                     data: {
                         gid: asanaUserTaskListGid
                     }
+                });
+            const asanaProjectScope = nock('https://app.asana.com')
+                .get(`/api/1.0/workspaces/${newWorkspaceId}/projects?limit=50`)
+                .once()
+                .reply(200, {
+                    data: [{
+                        gid: 'projectGid',
+                        resource_type: 'project'
+                    }]
                 });
 
 
@@ -215,6 +223,7 @@ describe('oauthCallback', () => {
             asanaWorkspaceScope.done();
             asanaCreateWebhookScope.done();
             asanaUseTaskListScope.done();
+            asanaProjectScope.done();
         });
     });
 });

@@ -71,11 +71,6 @@ async function interactiveMessages(req, res) {
         await checkAndRefreshAccessToken(asanaUser);
         const client = asana.Client.create().useAccessToken(asanaUser.accessToken);
 
-        const subscription = await Subscription.findOne({
-            where: {
-                asanaUserId: asanaUser.id
-            }
-        });
         let dialogResponse = {
             type: "dialog",
             dialog: null
@@ -89,7 +84,7 @@ async function interactiveMessages(req, res) {
                 break;
             case 'configEdit':
                 const workspacesResponse = await client.workspaces.findAll();
-                const editConfigCard = cardBuilder.editConfigCard(bot.id, workspacesResponse.data, subscription);
+                const editConfigCard = cardBuilder.editConfigCard(bot.id, workspacesResponse.data, asanaUser);
                 const editConfigDialog = dialogBuilder.getCardDialog({
                     title: 'Edit Config',
                     size: null,
@@ -102,19 +97,25 @@ async function interactiveMessages(req, res) {
                 const newTimezoneOffset = body.data.timezoneOffset;
                 const newTaskDueReminderInterval = body.data.taskDueReminderInterval;
                 const newWorkspaceId = body.data.workspace;
-                if (newWorkspaceId == subscription.workspaceId) {
-                    await subscription.update({
+                if (newWorkspaceId == asanaUser.workspaceId) {
+                    await asanaUser.update({
                         timezoneOffset: newTimezoneOffset,
                         taskDueReminderInterval: newTaskDueReminderInterval
                     });
-                    await bot.updateAdaptiveCard(cardId, cardBuilder.configCard(bot.id, subscription));
+                    await bot.updateAdaptiveCard(cardId, cardBuilder.configCard(bot.id, asanaUser));
                 }
                 else {
-                    await subscriptionHandler.unsubscribe(asanaUser, subscription);
+                    await subscriptionHandler.unsubscribeAll(asanaUser);
                     const newWorkspacesResponse = await client.workspaces.findAll();
                     const newWorkspace = newWorkspacesResponse.data.find(w => w.gid == newWorkspaceId);
-                    const newSubscription = await subscriptionHandler.subscribe(asanaUser, newWorkspace, groupId, newTaskDueReminderInterval, newTimezoneOffset);
-                    await bot.updateAdaptiveCard(cardId, cardBuilder.configCard(bot.id, newSubscription));
+                    await subscriptionHandler.subscribe(asanaUser, newWorkspace, groupId);
+                    await asanaUser.update({
+                        workspaceName: newWorkspace.name,
+                        workspaceId: newWorkspace.gid,
+                        taskDueReminderInterval: newTaskDueReminderInterval,
+                        timezoneOffset: newTimezoneOffset
+                    })
+                    await bot.updateAdaptiveCard(cardId, cardBuilder.configCard(bot.id, asanaUser));
                 }
                 break;
             case 'replyComment':

@@ -43,19 +43,18 @@
                 {
                     "title": "5",
                     "value": "5"
-                },
-                {
-                    "title": "6",
-                    "value": "6"
-                },
-                {
-                    "title": "7",
-                    "value": "7"
                 }
             ],
             "id": "taskDueReminderInterval",
-            "label": "Task Due Reminder (days ahead)",
+            "label": "Task Due Reminder",
             "value": "${taskDueReminderInterval}"
+        },
+        {
+            "type": "TextBlock",
+            "wrap": true,
+            "size": "Small",
+            "color": "Warning",
+            "text": "Reminder message will be sent at 8am on X business days before due. "
         },
         {
             "type": "Input.ChoiceSet",

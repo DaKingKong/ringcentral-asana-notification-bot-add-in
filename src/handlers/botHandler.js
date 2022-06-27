@@ -52,7 +52,7 @@ const botHandler = async event => {
                         break;
                     case 'logout':
                         if (existingAsanaUser) {
-                            const unAuthCard = cardBuilder.unAuthCard(botForMessage.id, 'This will unsubscribe to all Asana events.');
+                            const unAuthCard = cardBuilder.unAuthCard(botForMessage.id, 'Logging out will remove all existing Asana event subscriptions.');
                             await botForMessage.sendAdaptiveCard(createGroupResponse.id, unAuthCard);
                         } else {
                             await botForMessage.sendMessage(group.id, { text: 'Asana account not found. Please type `login` to authorize your account.' });
@@ -60,12 +60,7 @@ const botHandler = async event => {
                         break;
                     case 'config':
                         if (existingAsanaUser) {
-                            const existingSubscription = await Subscription.findOne({
-                                where: {
-                                    asanaUserId: existingAsanaUser.id
-                                }
-                            });
-                            const configCard = cardBuilder.configCard(botForMessage.id, existingSubscription);
+                            const configCard = cardBuilder.configCard(botForMessage.id, existingAsanaUser);
                             await botForMessage.sendAdaptiveCard(createGroupResponse.id, configCard);
                         } else {
                             await botForMessage.sendMessage(group.id, { text: 'Asana account not found. Please type `login` to authorize your account.' });

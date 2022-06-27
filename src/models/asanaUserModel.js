@@ -33,5 +33,17 @@ exports.AsanaUser = sequelize.define('asana-users', {
     },
     userTaskListGid: {
         type: Sequelize.STRING,
+    },
+    workspaceName: {
+      type: Sequelize.STRING
+    },
+    workspaceId: {
+      type: Sequelize.STRING
+    },
+    taskDueReminderInterval: {
+      type: Sequelize.STRING
+    },
+    timezoneOffset: {
+      type: Sequelize.STRING
     }
 });

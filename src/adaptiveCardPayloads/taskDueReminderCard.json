@@ -8,17 +8,18 @@
             "weight": "Bolder"
         },
         {
-            "type": "ColumnSet",
-            "columns": [
+            "type": "TextBlock",
+            "text": "Following task(s) due in ${taskDueReminderInterval} business days.",
+            "weight": "Bolder",
+            "wrap": true
+        },
+        {
+            "type": "Container",
+            "items": [
                 {
-                    "type": "Column",
+                    "type": "Container",
+                    "$data": "${tasks}",
                     "items": [
-                        {
-                            "type": "TextBlock",
-                            "text": "You have a task due soon",
-                            "weight": "Bolder",
-                            "wrap": true
-                        },
                         {
                             "type": "FactSet",
                             "facts": [
@@ -43,22 +44,22 @@
                         {
                             "type": "FactSet",
                             "facts": "${customFields}"
+                        },
+                        {
+                            "type": "ActionSet",
+                            "actions": [
+                                {
+                                    "type": "Action.OpenUrl",
+                                    "title": "Open Task",
+                                    "url": "${taskLink}"
+                                }
+                            ]
                         }
                     ],
-                    "width": "stretch"
+                    "separator": true
                 }
             ],
             "separator": true
-        },
-        {
-            "type": "ActionSet",
-            "actions": [
-                {
-                    "type": "Action.OpenUrl",
-                    "title": "Open Task",
-                    "url": "${taskLink}"
-                }
-            ]
         },
         {
             "type": "ColumnSet",

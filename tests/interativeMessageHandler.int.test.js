@@ -56,16 +56,16 @@ beforeAll(async () => {
         email: asanaUserEmail,
         name: asanaUserName,
         accessToken: asanaAccessToken,
-        userTaskListGid: asanaUserTaskListGid
+        userTaskListGid: asanaUserTaskListGid,
+        workspaceId,
+        workspaceName,
+        timezoneOffset,
+        taskDueReminderInterval,
     });
     await Subscription.create({
         id: subId,
         asanaUserId,
         groupId,
-        workspaceId,
-        workspaceName,
-        timezoneOffset,
-        taskDueReminderInterval,
         asanaWebhookId
     })
 });
@@ -231,7 +231,11 @@ describe('interactiveMessageHandler', () => {
                     email: asanaUserEmail,
                     name: asanaUserName,
                     accessToken: asanaAccessToken,
-                    userTaskListGid: asanaUserTaskListGid
+                    userTaskListGid: asanaUserTaskListGid,
+                    workspaceId,
+                    workspaceName,
+                    timezoneOffset,
+                    taskDueReminderInterval
                 });
             });
         });
@@ -306,15 +310,15 @@ describe('interactiveMessageHandler', () => {
                 // Act
                 const res = await request(server).post('/interactive-messages').send(postData)
                 // Assert
-                const updatedSubscription = await Subscription.findByPk(subId);
+                const updatedAsanaUser = await AsanaUser.findByPk(asanaUserId);
                 expect(res.status).toEqual(200);
-                expect(updatedSubscription.timezoneOffset).toBe(newTimezoneOffset);
-                expect(updatedSubscription.taskDueReminderInterval).toBe(newTaskDueReminderInterval);
+                expect(updatedAsanaUser.timezoneOffset).toBe(newTimezoneOffset);
+                expect(updatedAsanaUser.taskDueReminderInterval).toBe(newTaskDueReminderInterval);
                 expect(requestBody.type).toBe('AdaptiveCard');
                 expect(requestBody.body[0].text).toBe('Config');
 
                 // Clean up
-                await updatedSubscription.update({
+                await updatedAsanaUser.update({
                     timezoneOffset,
                     taskDueReminderInterval
                 })
@@ -345,6 +349,12 @@ describe('interactiveMessageHandler', () => {
                 updateCardScope.once('request', ({ headers: requestHeaders }, interceptor, reqBody) => {
                     requestBody = JSON.parse(reqBody);
                 });
+                const asanaDeleteWebhookScope = nock('https://app.asana.com')
+                    .delete(`/api/1.0/webhooks/${asanaWebhookId}`)
+                    .once()
+                    .reply(200, {
+                        data: null
+                    });
                 const asanaWorkspaceScope = nock('https://app.asana.com')
                     .get(`/api/1.0/workspaces?limit=50`)
                     .once()
@@ -354,13 +364,12 @@ describe('interactiveMessageHandler', () => {
                             name: newWorkspaceName
                         }]
                     });
-                const asanaDeleteWebhookScope = nock('https://app.asana.com')
-                    .delete(`/api/1.0/webhooks/${asanaWebhookId}`)
+                const asanaProjectScope = nock('https://app.asana.com')
+                    .get(`/api/1.0/workspaces/${newWorkspaceId}/projects?limit=50`)
                     .once()
                     .reply(200, {
-                        data: null
+                        data: []
                     });
-
                 const asanaCreateWebhookScope = nock('https://app.asana.com')
                     .post(`/api/1.0/webhooks`)
                     .once()
@@ -369,7 +378,6 @@ describe('interactiveMessageHandler', () => {
                             gid: asanaWebhookId
                         }
                     });
-
                 const asanaUseTaskListScope = nock('https://app.asana.com')
                     .get(`/api/1.0/users/me/user_task_list?workspace=${newWorkspaceId}`)
                     .once()
@@ -379,38 +387,23 @@ describe('interactiveMessageHandler', () => {
                         }
                     });
 
-
                 // Act
                 const res = await request(server).post('/interactive-messages').send(postData)
 
                 // Assert
-                const newSubscription = await Subscription.findOne({
-                    where: {
-                        workspaceName: newWorkspaceName
-                    }
-                })
+                const updatedAsanaUser = await AsanaUser.findByPk(asanaUserId);
                 expect(res.status).toEqual(200);
-                expect(newSubscription.timezoneOffset).toBe(newTimezoneOffset);
-                expect(newSubscription.taskDueReminderInterval).toBe(newTaskDueReminderInterval);
+                expect(updatedAsanaUser.timezoneOffset).toBe(newTimezoneOffset);
+                expect(updatedAsanaUser.taskDueReminderInterval).toBe(newTaskDueReminderInterval);
                 expect(requestBody.type).toBe('AdaptiveCard');
                 expect(requestBody.body[0].text).toBe('Config');
 
                 // Clean up
                 asanaWorkspaceScope.done();
                 asanaDeleteWebhookScope.done();
+                asanaProjectScope.done();
                 asanaCreateWebhookScope.done();
                 asanaUseTaskListScope.done();
-                await newSubscription.destroy();
-                await Subscription.create({
-                    id: subId,
-                    asanaUserId,
-                    groupId,
-                    workspaceId,
-                    workspaceName,
-                    timezoneOffset,
-                    taskDueReminderInterval,
-                    asanaWebhookId
-                })
             });
         });
 

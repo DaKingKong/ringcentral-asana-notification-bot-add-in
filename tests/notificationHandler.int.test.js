@@ -146,106 +146,6 @@ describe('notificationHandler', () => {
             expect(res.get('x-hook-secret')).toEqual('handshake_secret');
         });
 
-        test('change from user self does - no notification', async () => {
-            // Arrange
-            const postData = {
-                events: [
-                    {
-                        user: {
-                            gid: asanaUserId
-                        }
-                    }
-                ]
-            }
-
-            // Act
-            const res = await request(server).post(`/notification?subscriptionId=${subId}`).set('X-Hook-Secret', 'handshake_secret').send(postData);
-
-            // Assert
-            expect(res.status).toEqual(200);
-            expect(res.get('x-hook-secret')).toEqual('handshake_secret');
-        });
-
-        test('change from user self does - no notification', async () => {
-            // Arrange
-            const postData = {
-                events: [
-                    {
-                        user: {
-                            gid: asanaUserId
-                        }
-                    }
-                ]
-            }
-
-            // Act
-            const res = await request(server).post(`/notification?subscriptionId=${subId}`).set('X-Hook-Secret', 'handshake_secret').send(postData);
-
-            // Assert
-            expect(res.status).toEqual(200);
-            expect(res.get('x-hook-secret')).toEqual('handshake_secret');
-        });
-
-        test('change from user self does - no notification', async () => {
-            // Arrange
-            const postData = {
-                events: [
-                    {
-                        user: {
-                            gid: asanaUserId
-                        }
-                    }
-                ]
-            }
-
-            // Act
-            const res = await request(server).post(`/notification?subscriptionId=${subId}`).set('X-Hook-Secret', 'handshake_secret').send(postData);
-
-            // Assert
-            expect(res.status).toEqual(200);
-            expect(res.get('x-hook-secret')).toEqual('handshake_secret');
-        });
-
-        test('change from user self does - no notification', async () => {
-            // Arrange
-            const postData = {
-                events: [
-                    {
-                        user: {
-                            gid: asanaUserId
-                        }
-                    }
-                ]
-            }
-
-            // Act
-            const res = await request(server).post(`/notification?subscriptionId=${subId}`).set('X-Hook-Secret', 'handshake_secret').send(postData);
-
-            // Assert
-            expect(res.status).toEqual(200);
-            expect(res.get('x-hook-secret')).toEqual('handshake_secret');
-        });
-
-        test('change from user self does - no notification', async () => {
-            // Arrange
-            const postData = {
-                events: [
-                    {
-                        user: {
-                            gid: asanaUserId
-                        }
-                    }
-                ]
-            }
-
-            // Act
-            const res = await request(server).post(`/notification?subscriptionId=${subId}`).set('X-Hook-Secret', 'handshake_secret').send(postData);
-
-            // Assert
-            expect(res.status).toEqual(200);
-            expect(res.get('x-hook-secret')).toEqual('handshake_secret');
-        });
-
         test('new task - new task notification', async () => {
             // Arrange
             let requestBody = null;
@@ -287,7 +187,10 @@ describe('notificationHandler', () => {
                             name: taskProjectName
                         }],
                         due_on: taskDueOn,
-                        permalink_url: taskPermaLink
+                        permalink_url: taskPermaLink,
+                        followers: [
+                            { gid: asanaUserId }
+                        ]
                     }
                 });
             cardScope.once('request', ({ headers: requestHeaders }, interceptor, reqBody) => {
@@ -350,16 +253,19 @@ describe('notificationHandler', () => {
                             name: taskProjectName
                         }],
                         due_on: taskDueOn,
-                        permalink_url: taskPermaLink
+                        permalink_url: taskPermaLink,
+                        followers: [
+                            { gid: asanaUserId }
+                        ]
                     }
                 });
-                const asanaGetCommentScope = nock('https://app.asana.com')
-                    .get(`/api/1.0/stories/${commentId}`)
-                    .reply(200, {
-                        data: {
-                            text: ''
-                        }
-                    });
+            const asanaGetCommentScope = nock('https://app.asana.com')
+                .get(`/api/1.0/stories/${commentId}`)
+                .reply(200, {
+                    data: {
+                        text: ''
+                    }
+                });
             cardScope.once('request', ({ headers: requestHeaders }, interceptor, reqBody) => {
                 requestBody = JSON.parse(reqBody);
             });

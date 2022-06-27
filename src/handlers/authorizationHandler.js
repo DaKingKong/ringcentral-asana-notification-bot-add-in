@@ -2,7 +2,6 @@ const { getOAuthApp, checkAndRefreshAccessToken, revokeToken } = require('../lib
 const Bot = require('ringcentral-chatbot-core/dist/models/Bot').default;
 const asana = require('asana');
 const { AsanaUser } = require('../models/asanaUserModel');
-const { Subscription } = require('../models/subscriptionModel');
 const rcAPI = require('../lib/rcAPI');
 const subscriptionHandler = require('./subscriptionHandler');
 const cardBuilder = require('../lib/cardBuilder');
@@ -41,6 +40,7 @@ async function oauthCallback(req, res) {
         let asanaUser = await AsanaUser.findByPk(userId);
         // Step2: If user doesn't exist, we want to create a new one
         if (!asanaUser) {
+            const workspacesResponse = await asanaClient.workspaces.findAll();
             asanaUser = await AsanaUser.create({
                 id: userId,
                 name: userInfo.name,
@@ -50,15 +50,18 @@ async function oauthCallback(req, res) {
                 accessToken: accessToken,
                 refreshToken: refreshToken,
                 tokenExpiredAt: expires,
-                rcDMGroupId: createGroupResponse.id
+                rcDMGroupId: createGroupResponse.id,
+                workspaceName: workspacesResponse.data[0].name,
+                workspaceId: workspacesResponse.data[0].gid,
+                taskDueReminderInterval: 'off',
+                timezoneOffset: '0'
             });
 
-            const workspacesResponse = await asanaClient.workspaces.findAll();
-            const subscription = await subscriptionHandler.subscribe(asanaUser, workspacesResponse.data[0], asanaUser.rcDMGroupId, 'off', '0');
-    
+            await subscriptionHandler.subscribe(asanaUser, workspacesResponse.data[0], asanaUser.rcDMGroupId);
+
             await bot.sendMessage(asanaUser.rcDMGroupId, { text: `Successfully logged in.` });
-    
-            const configCard = cardBuilder.configCard(bot.id, subscription);
+
+            const configCard = cardBuilder.configCard(bot.id, asanaUser);
             await bot.sendAdaptiveCard(asanaUser.rcDMGroupId, configCard);
         }
         else {
@@ -75,14 +78,7 @@ async function oauthCallback(req, res) {
 
 async function unauthorize(asanaUser) {
     await checkAndRefreshAccessToken(asanaUser);
-    const userSubscriptions = await Subscription.findAll({
-        where: {
-            asanaUserId: asanaUser.id
-        }
-    });
-    for (const sub of userSubscriptions) {
-        await subscriptionHandler.unsubscribe(asanaUser, sub);
-    }
+    await subscriptionHandler.unsubscribeAll(asanaUser);
     await revokeToken(asanaUser);
 }
 

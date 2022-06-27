@@ -14,25 +14,19 @@
                     "type": "Column",
                     "items": [
                         {
-                            "type": "TextBlock",
-                            "text": "A new comment under your task",
-                            "weight": "Bolder",
-                            "wrap": true
-                        },
-                        {
                             "type": "FactSet",
                             "facts": [
                                 {
-                                    "title": "Task Name",
-                                    "value": "[${taskName}](${taskLink})"
-                                },
-                                {
                                     "title": "Comment",
-                                    "value": "${comment}"
+                                    "value": "**${comment}**"
                                 },
                                 {
                                     "title": "Commented By",
                                     "value": "${username} (${userEmail})"
+                                },
+                                {
+                                    "title": "Task Name",
+                                    "value": "[${taskName}](${taskLink})"
                                 }
                             ]
                         }

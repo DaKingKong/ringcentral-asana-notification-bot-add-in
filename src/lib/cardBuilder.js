@@ -35,25 +35,25 @@ function unAuthCard(botId, additionalInfoText) {
     return card;
 }
 
-function configCard(botId, subscription) {
+function configCard(botId, asanaUser) {
     const template = new Template(configCardTemplateJson);
-    const timezoneNumber = Number(subscription.timezoneOffset);
+    const timezoneNumber = Number(asanaUser.timezoneOffset);
     const timezoneText = `${timezoneNumber >= 0 ? '+' : ''}${timezoneNumber.toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false })}:00`
     let taskDueReminderIntervalText = '';
-    switch (subscription.taskDueReminderInterval) {
+    switch (asanaUser.taskDueReminderInterval) {
         case 'off':
             taskDueReminderIntervalText = 'OFF';
             break;
         case '1':
-            taskDueReminderIntervalText = '1 day ahead';
+            taskDueReminderIntervalText = '1 business day ahead';
             break;
         default:
-            taskDueReminderIntervalText = `${subscription.taskDueReminderInterval} days ahead`;
+            taskDueReminderIntervalText = `${asanaUser.taskDueReminderInterval} business days ahead`;
             break;
     }
     const cardData = {
         botId,
-        workspaceName: subscription.workspaceName,
+        workspaceName: asanaUser.workspaceName,
         taskDueReminderInterval: taskDueReminderIntervalText,
         timezoneOffset: timezoneText
     }
@@ -63,7 +63,7 @@ function configCard(botId, subscription) {
     return card;
 }
 
-function editConfigCard(botId, workspaces, subscription) {
+function editConfigCard(botId, workspaces, asanaUser) {
     const template = new Template(editConfigCardTemplateJson);
     const workspaceDataPairs = workspaces.map(w => {
         return {
@@ -74,9 +74,9 @@ function editConfigCard(botId, workspaces, subscription) {
     const cardData = {
         botId,
         workspaceDataPairs,
-        workspaceId: subscription.workspaceId,
-        taskDueReminderInterval: subscription.taskDueReminderInterval,
-        timezoneOffset: subscription.timezoneOffset
+        workspaceId: asanaUser.workspaceId,
+        taskDueReminderInterval: asanaUser.taskDueReminderInterval,
+        timezoneOffset: asanaUser.timezoneOffset
     }
     const card = template.expand({
         $root: cardData
@@ -102,33 +102,29 @@ function newTaskAssignedCard(taskName, taskDescription, projectNames, taskDueDat
     return card;
 }
 
-function taskDueDateChangeCard(taskName, taskDescription, projectNames, taskDueDate, userName, userEmail, taskLink) {
-    const template = new Template(taskDueChangeCardTemplateJson);
-    const cardData = {
-        taskName,
-        taskDescription,
-        projectNames,
-        taskDueDate,
-        userName,
-        userEmail,
-        taskLink
-    }
-    const card = template.expand({
-        $root: cardData
-    });
-    return card;
-}
+// function taskDueDateChangeCard(taskName, taskDescription, projectNames, taskDueDate, userName, userEmail, taskLink) {
+//     const template = new Template(taskDueChangeCardTemplateJson);
+//     const cardData = {
+//         taskName,
+//         taskDescription,
+//         projectNames,
+//         taskDueDate,
+//         userName,
+//         userEmail,
+//         taskLink
+//     }
+//     const card = template.expand({
+//         $root: cardData
+//     });
+//     return card;
+// }
 
 
-function taskDueReminderCard(taskName, taskDescription, projectNames, taskDueDate, taskLink, customFields) {
+function taskDueReminderCard(taskDueReminderInterval, tasks) {
     const template = new Template(taskDueReminderCardTemplateJson);
     const cardData = {
-        taskName,
-        taskDescription,
-        projectNames,
-        taskDueDate,
-        taskLink,
-        customFields
+        taskDueReminderInterval,
+        tasks
     }
     const card = template.expand({
         $root: cardData
@@ -160,6 +156,6 @@ exports.unAuthCard = unAuthCard;
 exports.configCard = configCard;
 exports.editConfigCard = editConfigCard;
 exports.newTaskAssignedCard = newTaskAssignedCard;
-exports.taskDueDateChangeCard = taskDueDateChangeCard;
+// exports.taskDueDateChangeCard = taskDueDateChangeCard;
 exports.taskDueReminderCard = taskDueReminderCard;
 exports.newCommentCard = newCommentCard;
