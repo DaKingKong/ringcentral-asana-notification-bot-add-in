@@ -1,37 +1,9 @@
-## Welcome to GitHub Pages
+## Asana Bot for RingCentral App
 
-You can use the [editor on GitHub](https://github.com/ringcentral/ringcentral-asana-notification-bot-add-in/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+Log in with your Asana Account to receive notifications on **New Assign Task**, **New Comments** and **Task Due Reminder**. Here are my commands:
+    1. `login`: **Login** with your Asana Account
+    2. `logout`: **Logout** your Asana Account and **clear all** subscriptions created by it
+    3. `config`: **Show** current config settings
+    4. `help`: **Show** this help message
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ringcentral/ringcentral-asana-notification-bot-add-in/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+[Support](https://docs.google.com/forms/d/e/1FAIpQLSfPDFcLzgXh-y8hZuNkqbeK77_e9OlR1qs69eZTatIUDymBnw/viewform)
