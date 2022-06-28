@@ -55,7 +55,7 @@ async function release({
         });
 
         await octokit.rest.repos.createRelease({
-            owner: process.env.GITHUB_OWNER,
+            owner: 'ringcentral',
             repo: packageJson.name,
             tag_name: versionTag,
             name: versionTag,
