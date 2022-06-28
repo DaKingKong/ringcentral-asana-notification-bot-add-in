@@ -3,7 +3,6 @@ const asana = require('asana');
 const cardBuilder = require('./lib/cardBuilder');
 const Bot = require('ringcentral-chatbot-core/dist/models/Bot').default;
 const { AsanaUser } = require('./models/asanaUserModel')
-const { Subscription } = require('./models/subscriptionModel');
 const { checkAndRefreshAccessToken } = require('./lib/oauth');
 const Op = require('sequelize').Op;
 const moment = require('moment');
@@ -13,19 +12,18 @@ const MAX_TASK_DESC_LENGTH = 200;
 async function triggerDueTaskReminder() {
     const date = new Date();
     const utcDate = moment(date).utc();
-    const subscriptions = await Subscription.findAll({
+    const asanaUsers = await AsanaUser.findAll({
         where: {
             taskDueReminderInterval: {
                 [Op.ne]: 'off'
             }
         }
     });
-    for (const sub of subscriptions) {
-        console.log(`checking subscription: ${sub.id}`);
-        const userLocalHour = utcDate.get('hour') + Number(sub.timezoneOffset);
+    for (const asanaUser of asanaUsers) {
+        console.log(`checking for user: ${asanaUser.email}`);
+        const userLocalHour = utcDate.get('hour') + Number(asanaUser.timezoneOffset);
         // trigger time is 8am in the morning, for user's timezone
         if (userLocalHour == 8 || userLocalHour == 32) {
-            const asanaUser = await AsanaUser.findByPk(sub.asanaUserId);
             await checkAndRefreshAccessToken(asanaUser);
             const asanaClient = asana.Client.create({ "defaultHeaders": { "Asana-Enable": "new_user_task_lists" } }).useAccessToken(asanaUser.accessToken);
             const tasksResponse = await asanaClient.userTaskLists.tasks(asanaUser.userTaskListGid);
@@ -33,7 +31,7 @@ async function triggerDueTaskReminder() {
             for (const taskData of tasksResponse.data) {
                 const task = await asanaClient.tasks.findById(taskData.gid);
                 if (task.due_on) {
-                    const utcDateToTrigger = reduceBusinessDays(moment.utc(task.due_on), Number(sub.taskDueReminderInterval)).add(userLocalHour - Number(sub.timezoneOffset), 'hours');
+                    const utcDateToTrigger = reduceBusinessDays(moment.utc(task.due_on), Number(asanaUser.taskDueReminderInterval)).add(userLocalHour - Number(asanaUser.timezoneOffset), 'hours');
                     if (utcDate.diff(utcDateToTrigger, 'hours') == 0) {
                         const taskName = task.name;
                         const taskDescription = task.notes.length > MAX_TASK_DESC_LENGTH ?
@@ -43,10 +41,12 @@ async function triggerDueTaskReminder() {
                         let customFields = [];
                         if (task.custom_fields) {
                             for (const customField of task.custom_fields) {
-                                customFields.push({
-                                    title: customField.name,
-                                    value: customField.display_value
-                                });
+                                if (customField.display_value) {
+                                    customFields.push({
+                                        title: customField.name,
+                                        value: customField.display_value
+                                    });
+                                }
                             }
                         }
                         const taskDueDate = task.due_on;
@@ -62,7 +62,7 @@ async function triggerDueTaskReminder() {
                     }
                 }
             }
-            const taskDueReminderCard = cardBuilder.taskDueReminderCard(sub.taskDueReminderInterval, tasks);
+            const taskDueReminderCard = cardBuilder.taskDueReminderCard(asanaUser.taskDueReminderInterval, tasks);
             const bot = await Bot.findByPk(asanaUser.botId);
             await bot.sendAdaptiveCard(asanaUser.rcDMGroupId, taskDueReminderCard);
         }

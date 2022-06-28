@@ -1,6 +1,6 @@
 {
     "name": "ringcentral-asana-notification-add-in",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "RingCentral Asana Bot Add-In",
     "keywords": [
         "RingCentral",
@@ -16,7 +16,9 @@
         "test": "set NODE_ENV=test&&jest --forceExit -i",
         "test-coverage": "set NODE_ENV=test&&jest --coverage",
         "serverless-build": "node ./scripts/serverless-build",
+        "build": "npm run serverless-build",
         "serverless-deploy": "node ./scripts/serverless-deploy",
+        "deploy": "npm run serverless-deploy",
         "release": "npm run test&&node bin/index.js release"
     },
     "dependencies": {
