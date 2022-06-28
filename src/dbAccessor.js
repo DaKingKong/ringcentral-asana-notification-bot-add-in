@@ -4,7 +4,7 @@ const { default: Bot } = require('ringcentral-chatbot-core/dist/models/Bot');
 
 async function executeQuery(input) {
     try {
-        if (input.Query) {
+        if (input.dbQuery) {
             console.log(input.dbQuery);
             const result = await sequelize.query(input.dbQuery);
             console.log(JSON.stringify(result, null, 2));
