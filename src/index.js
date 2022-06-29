@@ -7,8 +7,6 @@ const interactiveMessageHandler = require('./handlers/interactiveMessageHandler'
 const { AsanaUser } = require('./models/asanaUserModel');
 const { Subscription } = require('./models/subscriptionModel');
 
-const packageJson = require('../package.json');
-
 // extends or override express app as you need
 exports.appExtend = (app) => {
     const skills = [];
@@ -30,7 +28,7 @@ exports.appExtend = (app) => {
     console.log('server running...');
     console.log(`bot oauth uri: ${process.env.RINGCENTRAL_CHATBOT_SERVER}${botConfig.botRoute}/oauth`);
 
-    app.get('/is-alive', (req, res) => { res.send(`OK\n${packageJson.version}`); });
+    app.get('/is-alive', (req, res) => { res.send(`OK`); });
     
     app.get('/oauth-callback', authorizationHandler.oauthCallback);
     app.post('/notification', notificationHandler.notification);
