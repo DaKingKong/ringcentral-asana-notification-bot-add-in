@@ -1,5 +1,5 @@
 // require('dotenv').config();
-const { sequelize } = require('./server/models/sequelize');
+const { sequelize } = require('./models/sequelize');
 
 async function executeQuery(input) {
     try {
