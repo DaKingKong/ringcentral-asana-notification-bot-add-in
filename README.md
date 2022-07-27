@@ -1,4 +1,4 @@
-# RingCentral-Add-In-Framework
+# Asana-Bot-For-RingCentral-App
 
 [![CI Pipeline](https://github.com/ringcentral/ringcentral-asana-notification-bot-add-in/actions/workflows/release.yml/badge.svg)](https://github.com/ringcentral/ringcentral-asana-notification-bot-add-in/actions/workflows/release.yml)
 [![Coverage Status](https://coveralls.io/repos/github/ringcentral/ringcentral-asana-notification-bot-add-in/badge.svg?branch=main)](https://coveralls.io/github/ringcentral/ringcentral-asana-notification-bot-add-in?branch=main)
