@@ -1,0 +1,178 @@
+{
+    "type": "AdaptiveCard",
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.3",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Config",
+            "wrap": true,
+            "size": "Large",
+            "weight": "Bolder"
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "choices": "${workspaceDataPairs}",
+            "id": "workspace",
+            "label": "Workspace",
+            "value": "${workspaceId}"
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "choices": [
+                {
+                    "title": "OFF",
+                    "value": "off"
+                },
+                {
+                    "title": "1",
+                    "value": "1"
+                },
+                {
+                    "title": "2",
+                    "value": "2"
+                },
+                {
+                    "title": "3",
+                    "value": "3"
+                },
+                {
+                    "title": "4",
+                    "value": "4"
+                },
+                {
+                    "title": "5",
+                    "value": "5"
+                }
+            ],
+            "id": "taskDueReminderInterval",
+            "label": "Task Due Reminder",
+            "value": "${taskDueReminderInterval}"
+        },
+        {
+            "type": "TextBlock",
+            "wrap": true,
+            "size": "Small",
+            "color": "Warning",
+            "text": "Reminder message will be sent at 8am on X business days before due. "
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "choices": [
+                {
+                    "title": "+12:00",
+                    "value": "12"
+                },
+                {
+                    "title": "+11:00",
+                    "value": "11"
+                },
+                {
+                    "title": "+10:00",
+                    "value": "10"
+                },
+                {
+                    "title": "+09:00",
+                    "value": "9"
+                },
+                {
+                    "title": "+08:00",
+                    "value": "8"
+                },
+                {
+                    "title": "+07:00",
+                    "value": "7"
+                },
+                {
+                    "title": "+06:00",
+                    "value": "6"
+                },
+                {
+                    "title": "+05:00",
+                    "value": "5"
+                },
+                {
+                    "title": "+04:00",
+                    "value": "4"
+                },
+                {
+                    "title": "+03:00",
+                    "value": "3"
+                },
+                {
+                    "title": "+02:00",
+                    "value": "2"
+                },
+                {
+                    "title": "+01:00",
+                    "value": "1"
+                },
+                {
+                    "title": "+00:00",
+                    "value": "0"
+                },
+                {
+                    "title": "-01:00",
+                    "value": "-1"
+                },
+                {
+                    "title": "-02:00",
+                    "value": "-2"
+                },
+                {
+                    "title": "-03:00",
+                    "value": "-3"
+                },
+                {
+                    "title": "-04:00",
+                    "value": "-4"
+                },
+                {
+                    "title": "-05:00",
+                    "value": "-5"
+                },
+                {
+                    "title": "-06:00",
+                    "value": "-6"
+                },
+                {
+                    "title": "-07:00",
+                    "value": "-7"
+                },
+                {
+                    "title": "-08:00",
+                    "value": "-8"
+                },
+                {
+                    "title": "-09:00",
+                    "value": "-9"
+                },
+                {
+                    "title": "-10:00",
+                    "value": "-10"
+                },
+                {
+                    "title": "-11:00",
+                    "value": "-11"
+                }
+            ],
+            "label": "Timezone Offset (hours):",
+            "placeholder": "+00:00",
+            "id": "timezoneOffset",
+            "value": "${timezoneOffset}"
+        },
+        {
+            "type": "ActionSet",
+            "actions": [
+                {
+                    "type": "Action.Submit",
+                    "title": "Submit",
+                    "data": {
+                        "actionType": "submitConfig",
+                        "botId": "${botId}"
+                    }
+                }
+            ]
+        }
+    ]
+}

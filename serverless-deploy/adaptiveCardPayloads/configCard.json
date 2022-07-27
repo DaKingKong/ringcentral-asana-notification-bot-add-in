@@ -1,0 +1,78 @@
+{
+    "type": "AdaptiveCard",
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.3",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Config",
+            "wrap": true,
+            "size": "Large",
+            "weight": "Bolder"
+        },
+        {
+            "type": "FactSet",
+            "facts": [
+                {
+                    "title": "Workspace",
+                    "value": "${workspaceName}"
+                },
+                {
+                    "title": "Task Due Reminder",
+                    "value": "${taskDueReminderInterval}"
+                },
+                {
+                    "title": "Timezone Offset (hours)",
+                    "value": "${timezoneOffset}"
+                }
+            ]
+        },
+        {
+            "type": "ActionSet",
+            "actions": [
+                {
+                    "type": "Action.Submit",
+                    "title": "Edit",
+                    "data": {
+                        "actionType": "configEdit",
+                        "botId": "${botId}"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "Image",
+                            "url": "https://raw.githubusercontent.com/ringcentral/ringcentral-google-drive-notification-add-in/master/staticResources/feedback.png",
+                            "width": "20px",
+                            "horizontalAlignment": "Left"
+                        }
+                    ],
+                    "width": "auto"
+                },
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "[Feedback](https://forms.gle/ej3mZYMtSfeUoiC16)",
+                            "wrap": true,
+                            "size": "Small",
+                            "horizontalAlignment": "Left"
+                        }
+                    ],
+                    "spacing": "Small",
+                    "verticalContentAlignment": "Center"
+                }
+            ],
+            "horizontalAlignment": "Left",
+            "spacing": "Medium"
+        }
+    ]
+}

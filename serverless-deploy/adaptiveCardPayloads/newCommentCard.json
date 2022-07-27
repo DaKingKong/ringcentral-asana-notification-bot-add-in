@@ -1,0 +1,129 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "TextBlock",
+            "size": "Large",
+            "text": "New Comment",
+            "weight": "Bolder"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "FactSet",
+                            "facts": [
+                                {
+                                    "title": "Comment",
+                                    "value": "**${comment}**"
+                                },
+                                {
+                                    "title": "Commented By",
+                                    "value": "${username} (${userEmail})"
+                                },
+                                {
+                                    "title": "Task Name",
+                                    "value": "[${taskName}](${taskLink})"
+                                }
+                            ]
+                        }
+                    ],
+                    "width": "stretch"
+                }
+            ],
+            "separator": true
+        },
+        {
+            "type": "ActionSet",
+            "actions": [
+                {
+                    "type": "Action.OpenUrl",
+                    "title": "Open Task",
+                    "url": "${taskLink}"
+                },
+                {
+                    "type": "Action.ShowCard",
+                    "title": "Reply Comment",
+                    "card": {
+                        "type": "AdaptiveCard",
+                        "body": [
+                            {
+                                "type": "Input.Text",
+                                "placeholder": "reply here...",
+                                "label": "Reply:",
+                                "id": "reply",
+                                "isRequired": true
+                            },
+                            {
+                                "type": "Input.Toggle",
+                                "value": "false",
+                                "title": "mention all collaborators",
+                                "id": "mentionCollaborators"
+                            },
+                            {
+                                "type": "Input.Toggle",
+                                "value": "false",
+                                "title": "mention commenter",
+                                "id": "mentionCommenter"
+                            },
+                            {
+                                "type": "ActionSet",
+                                "actions": [
+                                    {
+                                        "type": "Action.Submit",
+                                        "title": "Submit",
+                                        "data": {
+                                            "actionType": "replyComment",
+                                            "taskId": "${taskId}",
+                                            "botId": "${botId}",
+                                            "commenterId": "${commenterId}"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "Image",
+                            "url": "https://raw.githubusercontent.com/ringcentral/ringcentral-google-drive-notification-add-in/master/staticResources/feedback.png",
+                            "width": "20px",
+                            "horizontalAlignment": "Left"
+                        }
+                    ],
+                    "width": "auto"
+                },
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "[Feedback](https://forms.gle/ej3mZYMtSfeUoiC16)",
+                            "wrap": true,
+                            "size": "Small",
+                            "horizontalAlignment": "Left"
+                        }
+                    ],
+                    "spacing": "Small",
+                    "verticalContentAlignment": "Center"
+                }
+            ],
+            "horizontalAlignment": "Left",
+            "spacing": "Medium"
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.3"
+}
