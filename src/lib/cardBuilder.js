@@ -88,9 +88,9 @@ function newTaskAssignedCard(taskName, taskDescription, projectNames, taskDueDat
     const template = new Template(newTaskAssignedCardTemplateJson);
     const cardData = {
         taskName,
-        taskDescription,
-        projectNames,
-        taskDueDate,
+        taskDescription: taskDescription ?? 'N/A',
+        projectNames: projectNames ?? 'N/A',
+        taskDueDate: taskDueDate ?? 'N/A',
         userName,
         userEmail,
         taskLink,
