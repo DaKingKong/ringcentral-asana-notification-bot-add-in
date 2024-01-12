@@ -65,7 +65,7 @@ async function oauthCallback(req, res) {
             await bot.sendAdaptiveCard(asanaUser.rcDMGroupId, configCard);
         }
         else {
-            await bot.sendMessage(asanaUser.rcDMGroupId, { text: `Asana account ${userInfo.email} already exists.` });
+            await bot.sendMessage(asanaUser.rcDMGroupId, { text: `Asana account already exists.` });
         }
     } catch (e) {
         console.error(e);

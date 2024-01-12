@@ -20,7 +20,6 @@ async function triggerDueTaskReminder() {
         }
     });
     for (const asanaUser of asanaUsers) {
-        console.log(`checking for user: ${asanaUser.email}`);
         const userLocalHour = utcDate.get('hour') + Number(asanaUser.timezoneOffset);
         // trigger time is 8am in the morning, for user's timezone
         if (userLocalHour == 8 || userLocalHour == 32) {
