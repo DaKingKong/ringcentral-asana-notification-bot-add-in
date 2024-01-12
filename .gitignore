@@ -105,3 +105,5 @@ db.sqlite
 
 serverless.yml
 env.yml
+/serverless-deploy/env_test.yml
+/serverless-deploy/serverless_ori.yml
