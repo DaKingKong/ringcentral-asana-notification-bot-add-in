@@ -318,10 +318,17 @@ describe('interactiveMessageHandler', () => {
                 expect(requestBody.body[0].text).toBe('Config');
 
                 // Clean up
-                await updatedAsanaUser.update({
-                    timezoneOffset,
-                    taskDueReminderInterval
-                })
+                await AsanaUser.update(
+                    {
+                        timezoneOffset,
+                        taskDueReminderInterval
+                    },
+                    {
+                        where: {
+                            id: updatedAsanaUser.id
+                        }
+                    }
+                )
             });
 
             test('different workspace - remove old subscription and create a new subscription', async () => {

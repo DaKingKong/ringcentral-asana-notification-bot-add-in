@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const { sequelize } = require('./sequelize');
 
-// Model for Google File data
+// Model for RC user data
 exports.RcUser = sequelize.define('rc-users', {
   id: {
     type: Sequelize.STRING,
@@ -9,8 +9,5 @@ exports.RcUser = sequelize.define('rc-users', {
   },
   rcDMGroupId: {
     type: Sequelize.STRING,
-  },
-  isReceiveAnnouncement: {
-    type: Sequelize.BOOLEAN
   }
 });

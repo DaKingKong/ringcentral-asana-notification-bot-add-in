@@ -30,7 +30,6 @@ const botHandler = async event => {
                 if (!rcUser) {
                     await RcUser.create({
                         id: userId,
-                        isReceiveAnnouncement: true,
                         rcDMGroupId: createGroupResponse.id
                     })
                 }

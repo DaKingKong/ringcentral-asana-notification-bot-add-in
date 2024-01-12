@@ -7,7 +7,6 @@ const { checkAndRefreshAccessToken } = require('../lib/oauth');
 const asana = require('asana');
 const cardBuilder = require('../lib/cardBuilder');
 const dialogBuilder = require('../lib/dialogBuilder');
-const { Subscription } = require('../models/subscriptionModel');
 
 const receivedUuids = [];
 
@@ -98,10 +97,17 @@ async function interactiveMessages(req, res) {
                 const newTaskDueReminderInterval = body.data.taskDueReminderInterval;
                 const newWorkspaceId = body.data.workspace;
                 if (newWorkspaceId == asanaUser.workspaceId) {
-                    await asanaUser.update({
-                        timezoneOffset: newTimezoneOffset,
-                        taskDueReminderInterval: newTaskDueReminderInterval
-                    });
+                    await AsanaUser.update(
+                        {
+                            timezoneOffset: newTimezoneOffset,
+                            taskDueReminderInterval: newTaskDueReminderInterval
+                        },
+                        {
+                            where: {
+                                id: asanaUser.id
+                            }
+                        }
+                    );
                     await bot.updateAdaptiveCard(cardId, cardBuilder.configCard(bot.id, asanaUser));
                 }
                 else {
@@ -109,12 +115,19 @@ async function interactiveMessages(req, res) {
                     const newWorkspacesResponse = await client.workspaces.findAll();
                     const newWorkspace = newWorkspacesResponse.data.find(w => w.gid == newWorkspaceId);
                     await subscriptionHandler.subscribe(asanaUser, newWorkspace, groupId);
-                    await asanaUser.update({
-                        workspaceName: newWorkspace.name,
-                        workspaceId: newWorkspace.gid,
-                        taskDueReminderInterval: newTaskDueReminderInterval,
-                        timezoneOffset: newTimezoneOffset
-                    })
+                    await AsanaUser.update(
+                        {
+                            workspaceName: newWorkspace.name,
+                            workspaceId: newWorkspace.gid,
+                            taskDueReminderInterval: newTaskDueReminderInterval,
+                            timezoneOffset: newTimezoneOffset
+                        },
+                        {
+                            where: {
+                                id: asanaUser.id
+                            }
+                        }
+                    );
                     await bot.updateAdaptiveCard(cardId, cardBuilder.configCard(bot.id, asanaUser));
                 }
                 break;

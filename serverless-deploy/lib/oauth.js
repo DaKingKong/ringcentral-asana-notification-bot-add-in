@@ -1,5 +1,6 @@
 const ClientOAuth2 = require('client-oauth2');
 const axios = require('axios');
+const { AsanaUser } = require('../models/asanaUserModel');
 
 // oauthApp strategy is default to 'code' which use credentials to get accessCode, then exchange for accessToken and refreshToken.
 // To change to other strategies, please refer to: https://github.com/mulesoft-labs/js-client-oauth2
@@ -23,11 +24,16 @@ async function checkAndRefreshAccessToken(asanaUser) {
         const token = oauthApp.createToken(asanaUser.accessToken, asanaUser.refreshToken);
         const { accessToken, refreshToken, expires } = await token.refresh();
         console.log(`refreshing token...updating new token: ${asanaUser.accessToken}`);
-        await asanaUser.update(
+        await AsanaUser.update(
             {
                 accessToken,
                 refreshToken,
                 tokenExpiredAt: expires,
+            },
+            {
+                where: {
+                    id: asanaUser.id
+                }
             }
         );
     }

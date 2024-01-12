@@ -7,12 +7,6 @@ exports.AsanaUser = sequelize.define('asana-users', {
         type: Sequelize.STRING,
         primaryKey: true,
     },
-    email: {
-        type: Sequelize.STRING,
-    },
-    name: {
-        type: Sequelize.STRING,
-    },
     botId: {
         type: Sequelize.STRING,
     },
@@ -26,7 +20,7 @@ exports.AsanaUser = sequelize.define('asana-users', {
         type: Sequelize.STRING,
     },
     accessToken: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(1000),
     },
     tokenExpiredAt: {
         type: Sequelize.DATE

@@ -1,0 +1,22 @@
+RINGCENTRAL_SERVER: https://platform.devtest.ringcentral.com
+RINGCENTRAL_CHATBOT_CLIENT_ID: ESkWPysbROS2fUYsETG0Fw
+RINGCENTRAL_CHATBOT_CLIENT_SECRET: yeE35oyHRASgDxmnnZrUJQ_r0RNWchSJC_J5YoyEnTOA
+RINGCENTRAL_CHATBOT_ADMIN_USERNAME: dakong
+RINGCENTRAL_CHATBOT_ADMIN_PASSWORD: Testing!123
+RINGCENTRAL_CHATBOT_DATABASE_USERNAME: dakong
+RINGCENTRAL_CHATBOT_DATABASE_PASSWORD: Testing!123
+IM_SHARED_SECRET: nYxI31B2Q97JsjUeAXnqTesTC7xZBJul
+RINGCENTRAL_CHATBOT_DATABASE_CONNECTION_URI:
+  Fn::Join:
+    - ""
+    - - postgresql://dakong:Testing!123@
+      - "Fn::GetAtt": [Database, Endpoint.Address]
+      - /postgres
+RINGCENTRAL_CHATBOT_SERVER: https://asana-add-in-test.integration.ringcentral.com
+
+CLIENT_ID: 1202152378632785
+CLIENT_SECRET: 38e60779609d4e4f3b1291b0d9f0cc50
+ACCESS_TOKEN_URI: https://app.asana.com/-/oauth_token
+AUTHORIZATION_URI: https://app.asana.com/-/oauth_authorize
+SCOPES: default
+SCOPES_SEPARATOR: ","

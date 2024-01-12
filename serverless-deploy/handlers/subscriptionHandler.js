@@ -1,6 +1,7 @@
 const { Subscription } = require('../models/subscriptionModel');
 const { generate } = require('shortid');
 const asana = require('asana');
+const { AsanaUser } = require('../models/asanaUserModel');
 
 async function subscribe(asanaUser, workspace, groupId) {
     const subscriptionId = generate();
@@ -10,9 +11,17 @@ async function subscribe(asanaUser, workspace, groupId) {
     const asanaClient = asana.Client.create().useAccessToken(asanaUser.accessToken);
     // get target resource id for my user task list
     const taskList = await asanaClient.userTaskLists.findByUser("me", { workspace: workspace.gid });
-    await asanaUser.update({
-        userTaskListGid: taskList.gid
-    });
+    await AsanaUser.update(
+        {
+            userTaskListGid: taskList.gid
+        },
+        {
+            where: 
+            {
+                id: asanaUser.id
+            }
+        }
+    )
 
     // Step.2: Get data from webhook creation response.
     // Here is a workaround to create a DB record before webhook is created on Asana,
