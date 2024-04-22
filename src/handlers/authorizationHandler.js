@@ -71,6 +71,7 @@ async function oauthCallback(req, res) {
         console.error(e);
         res.status(500);
         res.send('Internal error.');
+        return;
     }
     res.status(200);
     res.send('<!doctype><html><body>Successfully authorized. Please close this page.<script>window.close()</script></body></html>')

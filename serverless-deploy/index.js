@@ -1,5 +1,6 @@
 const { extendApp } = require('ringcentral-chatbot-core');
 const { botHandler } = require('./handlers/botHandler');
+const axios = require('axios');
 const authorizationHandler = require('./handlers/authorizationHandler');
 const notificationHandler = require('./handlers/notificationHandler');
 const interactiveMessageHandler = require('./handlers/interactiveMessageHandler');
@@ -31,6 +32,10 @@ exports.appExtend = (app) => {
     console.log(`bot oauth uri: ${process.env.RINGCENTRAL_CHATBOT_SERVER}${botConfig.botRoute}/oauth`);
 
     app.get('/is-alive', (req, res) => { res.send(`OK`); });
+    app.get('/ping-api', async (req, res) => { 
+        const apiInfoResp = await axios.get('https://api-xmrupxmn.int.rclabenv.com/restapi'); 
+        res.json(apiInfoResp.data)
+    });
     
     app.get('/oauth-callback', authorizationHandler.oauthCallback);
     app.post('/notification', notificationHandler.notification);

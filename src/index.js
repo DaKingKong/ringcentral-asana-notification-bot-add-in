@@ -1,5 +1,6 @@
 const { extendApp } = require('ringcentral-chatbot-core');
 const { botHandler } = require('./handlers/botHandler');
+const axios = require('axios');
 const authorizationHandler = require('./handlers/authorizationHandler');
 const notificationHandler = require('./handlers/notificationHandler');
 const interactiveMessageHandler = require('./handlers/interactiveMessageHandler');
