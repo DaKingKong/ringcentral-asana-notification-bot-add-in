@@ -6,6 +6,7 @@ const { AsanaUser } = require('./models/asanaUserModel')
 const { checkAndRefreshAccessToken } = require('./lib/oauth');
 const Op = require('sequelize').Op;
 const moment = require('moment');
+const { Analytics } = require('./lib/analytics');
 
 const MAX_TASK_DESC_LENGTH = 200;
 
@@ -64,6 +65,15 @@ async function triggerDueTaskReminder() {
             const taskDueReminderCard = cardBuilder.taskDueReminderCard(asanaUser.taskDueReminderInterval, tasks);
             const bot = await Bot.findByPk(asanaUser.botId);
             await bot.sendAdaptiveCard(asanaUser.rcDMGroupId, taskDueReminderCard);
+            const analytics = new Analytics({
+                mixpanelKey: process.env.MIXPANEL_KEY,
+                secretKey: process.env.ANALYTICS_SECRET_KEY,
+                userId: bot.id,
+                accountId: bot.token && bot.token.creator_account_id,
+            });
+            await analytics.trackBotAction('cardPosted', {
+                chatId: trelloWebhook.conversation_id,
+            });
         }
     }
 }

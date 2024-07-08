@@ -67,7 +67,8 @@ async function oauthCallback(req, res) {
             await bot.sendMessage(asanaUser.rcDMGroupId, { text: `Asana account already exists.` });
         }
     } catch (e) {
-        console.error(e);
+        console.error(e?.status);
+        console.error(e?.message);
         res.status(500);
         res.send('Internal error.');
         return;

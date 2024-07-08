@@ -4,6 +4,7 @@ const { checkAndRefreshAccessToken } = require('../lib/oauth');
 const cardBuilder = require('../lib/cardBuilder');
 const Bot = require('ringcentral-chatbot-core/dist/models/Bot').default;
 const asana = require('asana');
+const { Analytics } = require('../lib/analytics');
 
 const MAX_TASK_DESC_LENGTH = 200;
 
@@ -13,7 +14,8 @@ async function notification(req, res) {
         await sendNotification(query, body);
     }
     catch (e) {
-        console.error(e);
+        console.error(e?.status);
+        console.error(e?.message);
     }
     // required by Asana for handshake (https://developers.asana.com/docs/webhooks)
     if (req.headers['x-hook-secret']) {
@@ -40,6 +42,12 @@ async function sendNotification(query, body) {
         const asanaUserId = subscription.asanaUserId;
         const asanaUser = await AsanaUser.findByPk(asanaUserId.toString());
         const bot = await Bot.findByPk(asanaUser.botId);
+        const analytics = new Analytics({
+            mixpanelKey: process.env.MIXPANEL_KEY,
+            secretKey: process.env.ANALYTICS_SECRET_KEY,
+            userId: bot.id,
+            accountId: bot.token && bot.token.creator_account_id,
+        });
         // check token refresh condition
         await checkAndRefreshAccessToken(asanaUser);
         const client = asana.Client.create({ "defaultHeaders": { "Asana-Enable": "new_user_task_lists" } }).useAccessToken(asanaUser.accessToken);
@@ -51,8 +59,7 @@ async function sendNotification(query, body) {
             const byUser = await client.users.findById(event.user.gid);
             // task -> resource.gid == taskId; comment -> parent.gid == taskId
             const task = await client.tasks.findById(event.resource.resource_type == 'task' ? event.resource.gid : event.parent.gid);
-            if(!task.followers.map(f=>f.gid).includes(asanaUser.id))
-            {
+            if (!task.followers.map(f => f.gid).includes(asanaUser.id)) {
                 continue;
             }
             const taskName = task.name;
@@ -82,6 +89,9 @@ async function sendNotification(query, body) {
                     if (event.action == 'added') {
                         const newTaskAssignedCard = cardBuilder.newTaskAssignedCard(taskName, taskDescription, projectNames, taskDueDate, username, userEmail, taskLink, customFields);
                         await bot.sendAdaptiveCard(subscription.groupId, newTaskAssignedCard);
+                        await analytics.trackBotAction('cardPosted', {
+                          chatId: subscription.groupId,
+                        });
                     }
                 }
                 // COMMENTED: unconfirmed use case
@@ -108,6 +118,9 @@ async function sendNotification(query, body) {
                 }
                 const newCommentCard = cardBuilder.newCommentCard(bot.id, taskName, taskLink, commentWithMentions, username, userEmail, task.gid, event.user.gid);
                 await bot.sendAdaptiveCard(subscription.groupId, newCommentCard);
+                await analytics.trackBotAction('cardPosted', {
+                  chatId: subscription.groupId,
+                });
             }
         }
     }
@@ -119,7 +132,8 @@ async function announcement(req, res) {
         const { query, body } = req;
     }
     catch (e) {
-        console.error(e);
+        console.error(e?.status);
+        console.error(e?.message);
     }
     res.status(200);
     res.json({

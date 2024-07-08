@@ -7,10 +7,16 @@ const { checkAndRefreshAccessToken } = require('../lib/oauth');
 const asana = require('asana');
 const cardBuilder = require('../lib/cardBuilder');
 const dialogBuilder = require('../lib/dialogBuilder');
+const { Analytics } = require('../lib/analytics');
 
 const receivedUuids = [];
 
 async function interactiveMessages(req, res) {
+    const analytics = new Analytics({
+      mixpanelKey: process.env.MIXPANEL_KEY,
+      secretKey: process.env.ANALYTICS_SECRET_KEY,
+      userId: botId,
+    });
     try {
         // Shared secret can be found on RingCentral developer portal, under your app Settings
         const SHARED_SECRET = process.env.RINGCENTRAL_SHARED_SECRET;
@@ -47,6 +53,9 @@ async function interactiveMessages(req, res) {
             res.send('Bot not found');
             return;
         }
+        if (bot.token) {
+          analytics.setAccountId(bot.token.creator_account_id)
+        }
         const groupId = body.conversation.id;
         const rcUserId = body.user.extId;
         const cardId = req.body.card.id;
@@ -77,6 +86,11 @@ async function interactiveMessages(req, res) {
                 await authorizationHandler.unauthorize(asanaUser);
                 await bot.sendMessage(groupId, { text: 'successfully logged out.' });
                 await asanaUser.destroy();
+                await analytics.trackUserAction('cardSubmitted', body.user.extId, {
+                  action: 'logout',
+                  chatId: body.conversation.id,
+                  result: 'success',
+                });
                 break;
             case 'configEdit':
                 const workspacesResponse = await client.workspaces.findAll();
@@ -88,6 +102,11 @@ async function interactiveMessages(req, res) {
                     card: editConfigCard
                 });
                 dialogResponse.dialog = editConfigDialog;
+                await analytics.trackUserAction('cardSubmitted', body.user.extId, {
+                  action: 'openConfig',
+                  chatId: body.conversation.id,
+                  result: 'success',
+                });
                 break;
             case 'submitConfig':
                 const newTimezoneOffset = body.data.timezoneOffset;
@@ -127,6 +146,11 @@ async function interactiveMessages(req, res) {
                     );
                     await bot.updateAdaptiveCard(cardId, cardBuilder.configCard(bot.id, asanaUser));
                 }
+                await analytics.trackUserAction('cardSubmitted', body.user.extId, {
+                  action: 'submitConfig',
+                  chatId: body.conversation.id,
+                  result: 'success',
+                });
                 break;
             case 'replyComment':
                 let reply = body.data.reply;
@@ -151,13 +175,19 @@ async function interactiveMessages(req, res) {
                 }
                 await client.stories.createOnTask(taskId, { text: reply });
                 await bot.sendMessage(groupId, { text: 'Comment replied.' });
+                await analytics.trackUserAction('cardSubmitted', body.user.extId, {
+                  action: 'replyComment',
+                  chatId: body.conversation.id,
+                  result: 'success',
+                });
                 break;
         }
         res.status(200);
         dialogResponse.dialog ? res.send(dialogResponse) : res.send('OK');
     }
     catch (e) {
-        console.error(e);
+        console.error(e?.status);
+        console.error(e?.message);
         res.status(200);
         res.send('OK');
     }

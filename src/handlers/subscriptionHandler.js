@@ -118,7 +118,8 @@ async function unsubscribeAll(asanaUser) {
         }
     }
     catch (e) {
-        console.error(e);
+        console.error(e?.status);
+        console.error(e?.message);
     }
 }
 
