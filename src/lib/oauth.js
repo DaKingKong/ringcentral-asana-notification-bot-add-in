@@ -20,10 +20,8 @@ function getOAuthApp() {
 async function checkAndRefreshAccessToken(asanaUser) {
     const dateNow = new Date();
     if (asanaUser && asanaUser.refreshToken && (asanaUser.tokenExpiredAt < dateNow || !asanaUser.accessToken)) {
-        console.log(`refreshing token...revoking ${asanaUser.accessToken}`);
         const token = oauthApp.createToken(asanaUser.accessToken, asanaUser.refreshToken);
         const { accessToken, refreshToken, expires } = await token.refresh();
-        console.log(`refreshing token...updating new token: ${asanaUser.accessToken}`);
         await AsanaUser.update(
             {
                 accessToken,

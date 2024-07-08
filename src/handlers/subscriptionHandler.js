@@ -108,7 +108,6 @@ async function unsubscribeAll(asanaUser) {
             }
         });
         for (const subscription of userSubscriptions) {
-            console.log('unsubscribing ', subscription.asanaWebhookId)
             await asanaClient.webhooks.deleteById(subscription.asanaWebhookId);
             await Subscription.destroy(
                 {

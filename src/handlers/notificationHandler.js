@@ -30,7 +30,6 @@ async function sendNotification(query, body) {
     // Identify which user or subscription is relevant, normally by 3rd party webhook id or user id. 
     const subscriptionId = query.subscriptionId;
     const subscription = await Subscription.findByPk(subscriptionId);
-    console.log(`Receiving notification: ${JSON.stringify(body)}`)
 
     if (!subscription) {
         return;
@@ -52,12 +51,10 @@ async function sendNotification(query, body) {
             const byUser = await client.users.findById(event.user.gid);
             // task -> resource.gid == taskId; comment -> parent.gid == taskId
             const task = await client.tasks.findById(event.resource.resource_type == 'task' ? event.resource.gid : event.parent.gid);
-            console.log(task.followers);
             if(!task.followers.map(f=>f.gid).includes(asanaUser.id))
             {
                 continue;
             }
-            console.log(`Target Task:\n${JSON.stringify(task, null, 2)}`);
             const taskName = task.name;
             const taskDescription = task.notes.length > MAX_TASK_DESC_LENGTH ?
                 task.notes.substring(0, MAX_TASK_DESC_LENGTH) + '...' :
@@ -104,7 +101,6 @@ async function sendNotification(query, body) {
                 const mentionRegex = new RegExp('https://app.asana.com/0/(.{1,20})/list', 'g');
                 const userTaskListIds = commentStory.text.matchAll(mentionRegex);
                 for (const userTaskListId of userTaskListIds) {
-                    console.log(userTaskListId[1])
                     const userTaskList = await client.userTaskLists.findById(userTaskListId[1]);
                     if (userTaskList) {
                         commentWithMentions = commentWithMentions.replace(`https://app.asana.com/0/${userTaskListId[1]}/list`, `@${userTaskList.owner.name}`);

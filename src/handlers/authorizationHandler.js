@@ -26,7 +26,6 @@ async function oauthCallback(req, res) {
         return;
     }
 
-    console.log(`Receiving accessToken: ${accessToken} and refreshToken: ${refreshToken}`);
     try {
         // Step1: Get user info from 3rd party API call
         const asanaClient = asana.Client.create().useAccessToken(accessToken);

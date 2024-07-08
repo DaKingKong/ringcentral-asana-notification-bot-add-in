@@ -32,7 +32,7 @@
         "glip-integration-js": "^0.2.1",
         "parse-multipart-data": "^1.2.1",
         "pg": "^8.7.3",
-        "ringcentral-chatbot-core": "^1.5.4-beta.1",
+        "ringcentral-chatbot-core": "^1.6.1",
         "sequelize": "^6.35.1",
         "serverless-http": "^3.0.1",
         "shortid": "^2.2.16"

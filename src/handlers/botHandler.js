@@ -23,7 +23,6 @@ const botHandler = async event => {
                 break;
             case 'Message4Bot':
                 const { text, group, bot: botForMessage, userId } = event;
-                console.log(`=====incomingCommand.Message4Bot.${text}=====`);
                 // Create/Find DM conversation to the RC user
                 const createGroupResponse = await rcAPI.createConversation([userId], botForMessage.token.access_token);
                 const rcUser = await RcUser.findByPk(userId);
@@ -80,7 +79,8 @@ const botHandler = async event => {
         }
     }
     catch (e) {
-        console.log(e);
+        console.log(e?.status);
+        console.log(e?.message);
     }
 }
 
