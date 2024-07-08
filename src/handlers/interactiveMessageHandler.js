@@ -12,11 +12,6 @@ const { Analytics } = require('../lib/analytics');
 const receivedUuids = [];
 
 async function interactiveMessages(req, res) {
-    const analytics = new Analytics({
-      mixpanelKey: process.env.MIXPANEL_KEY,
-      secretKey: process.env.ANALYTICS_SECRET_KEY,
-      userId: botId,
-    });
     try {
         // Shared secret can be found on RingCentral developer portal, under your app Settings
         const SHARED_SECRET = process.env.RINGCENTRAL_SHARED_SECRET;
@@ -53,6 +48,11 @@ async function interactiveMessages(req, res) {
             res.send('Bot not found');
             return;
         }
+        const analytics = new Analytics({
+          mixpanelKey: process.env.MIXPANEL_KEY,
+          secretKey: process.env.ANALYTICS_SECRET_KEY,
+          userId: botId,
+        });
         if (bot.token) {
           analytics.setAccountId(bot.token.creator_account_id)
         }

@@ -129,7 +129,11 @@ describe('botHandler', () => {
                 userId: rcUserId,
                 bot,
                 group: {
-                    id: "groupId"
+                    id: "groupId",
+                    members: [
+                        1,
+                        2
+                    ]
                 }
             }
             postScope.once('request', ({ headers: requestHeaders }, interceptor, reqBody) => {

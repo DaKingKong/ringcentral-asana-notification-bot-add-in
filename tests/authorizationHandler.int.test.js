@@ -130,7 +130,7 @@ describe('oauthCallback', () => {
 
             // Assert
             expect(res.status).toEqual(200);
-            expect(requestBody.text).toBe(`Asana account ${asanaUserEmail} already exists.`);
+            expect(requestBody.text).toBe(`Asana account already exists.`);
 
             // Clean up
             asanaGetUserScope.done();

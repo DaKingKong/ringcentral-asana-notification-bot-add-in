@@ -107,12 +107,6 @@ const botHandler = async event => {
                         }
                         break;
                     case 'help':
-                        await analytics.trackBotAction('receivedMessage', {
-                            action: 'otherOrHelpRequest',
-                            result: 'success',
-                            chatId: group.id,
-                            chatMemberCount: group.members.length - 1,
-                        });
                     default:
                         await botForMessage.sendMessage(group.id, { text: HELPER_TEXT });
                         await analytics.trackBotAction('receivedMessage', {
@@ -123,6 +117,7 @@ const botHandler = async event => {
                         });
                         break;
                 }
+                break;
             case 'GroupLeft':
                 await analytics.trackUserAction('botRemovedFromTeam', null, {
                     chatId: event.message.body.id,
