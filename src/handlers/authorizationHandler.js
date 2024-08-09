@@ -42,8 +42,6 @@ async function oauthCallback(req, res) {
             const workspacesResponse = await asanaClient.workspaces.findAll();
             asanaUser = await AsanaUser.create({
                 id: userId,
-                name: userInfo.name,
-                email: userInfo.email,
                 botId,
                 rcUserId,
                 accessToken: accessToken,
